@@ -1,16 +1,105 @@
 package algorithms.mazeGenerators;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * This class defines a 3D Maze in a real world.
  */
-public class Maze3d {
+public class Maze3d implements Serializable{
 	
 	
 	protected int[][][] maze;
 	protected Position startPosition,goalPosition;
 	protected int xLength,yLength,zLength;
+	
+	
+	/**
+	 * constructor that gets byte array and construct a maze3d from its bytes
+	 * @param byteArr byte array
+	 * @throws IOException 
+	 */
+	public Maze3d(byte[] byteArr) throws IOException
+	{
+		ByteArrayInputStream in=new ByteArrayInputStream(byteArr);
+		DataInputStream dis=new DataInputStream(in);
+		
+		//creating a stream that reads primitive types easier
+		this.xLength=dis.readInt();
+		this.yLength=dis.readInt();
+		this.zLength=dis.readInt();
+		
+		maze=new int[xLength][yLength][zLength];
+		
+		for(int i=0;i<xLength;i++)
+		{
+			for(int j=0;j<yLength;j++)
+			{
+				for(int n=0;n<zLength;n++)
+				{
+					maze[i][j][n]=dis.read();//reads byte
+					
+				}
+			}
+		}
+		
+		startPosition = new Position(dis.readInt(), dis.readInt(), dis.readInt());
+		
+		goalPosition = new Position(dis.readInt(), dis.readInt(), dis.readInt());
+	}
+	
+	/**
+	 * returning all the maze3d data converted to byte array
+	 * format:
+	 * 4 bytes of size of x axis,4 bytes of size of y axis,4 bytes of size of z axis,
+	 * all the cells of maze 3d matrix,each one as byte,
+	 * the start position:3 integers represented by 4 bytes each
+	 * the goal position :3 integers represented by 4 bytes each
+	 * 
+	 * @return byte array with the maze details
+	 * @throws IOException 
+	 */
+	public byte[] toByteArray() 
+	{
+		//creating a stream that reads primitive types easier
+		ByteArrayOutputStream bb=new ByteArrayOutputStream();
+		DataOutputStream dis=new DataOutputStream(bb);
+		try {
+			
+			dis.writeInt(xLength);
+			dis.writeInt(yLength);
+			dis.writeInt(zLength);
+			
+			for(int i=0;i<xLength;i++)
+			{
+				for(int j=0;j<yLength;j++)
+				{
+					for(int n=0;n<zLength;n++)
+					{
+						dis.write(maze[i][j][n]);
+					}
+				}
+			}
+			dis.writeInt(startPosition.getX());
+			dis.writeInt(startPosition.getY());
+			dis.writeInt(startPosition.getZ());
+
+			dis.writeInt(goalPosition.getX());
+			dis.writeInt(goalPosition.getY());
+			dis.writeInt(goalPosition.getZ());
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}	
+		return bb.toByteArray();
+	}
+	
 	
 	public Maze3d(int x, int y, int z) {
 		

@@ -1,16 +1,29 @@
 package boot;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+
 import algorithms.mazeGenerators.GrowingTreeGenerator;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.Position;
 import algorithms.mazeGenerators.SimpleMaze3dGenerator;
 import algorithms.mazeGenerators.newestCell;
-
+import io.MyCompressorOutputStream;
 
 public class Run {
 
 private static void testMazeGenerator(Maze3dGenerator mg){
+	
 	
 	// prints the time it takes the algorithm to run
 	System.out.println(mg.measureAlgorithmTime(10,10,50));
@@ -76,6 +89,36 @@ private static void testMazeGenerator(Maze3dGenerator mg){
 	}
 	
 	public static void main(String[] args) {
+		
+		byte []mancc = new byte[20];
+		for(int i=0;i<10;i++){
+			mancc[i] = 0;
+		}
+		for(int i=10;i<20;i++){
+			mancc[i] = 1;
+		}
+		
+		OutputStream out = null;
+		
+		try{
+			out = new MyCompressorOutputStream(new FileOutputStream("1.txt"));
+		}
+		catch (FileNotFoundException e){
+			System.out.println(e.getMessage());
+		}
+		
+		
+		try{
+			out.write(mancc);
+			out.flush();
+			out.close();
+			String content = readFile("2.txt", StandardCharsets.UTF_8);
+			System.out.println("1.txt: " +content);
+		}
+		catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+		
 	
 		testMazeGenerator(new SimpleMaze3dGenerator());
 		
@@ -83,4 +126,41 @@ private static void testMazeGenerator(Maze3dGenerator mg){
 
 	}
 
-}
+	static String readFile(String path, Charset encoding) throws IOException 
+	{
+	   byte[] encoded = Files.readAllBytes(Paths.get(path));
+	   return new String(encoded, encoding);
+	}
+	
+	// convert InputStream to String
+		private static String getStringFromInputStream(InputStream is) {
+
+			BufferedReader br = null;
+			StringBuilder sb = new StringBuilder();
+
+			String line;
+			try {
+
+				br = new BufferedReader(new InputStreamReader(is));
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (br != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			return sb.toString();
+
+		}
+
+	}
+
