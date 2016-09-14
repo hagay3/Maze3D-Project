@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * This class defines a 3D Maze in a real world.
  */
-public class Maze3d implements Serializable{
+public class Maze3d {
 	
 	
 	protected int[][][] maze;
@@ -138,7 +138,7 @@ public class Maze3d implements Serializable{
 	   * @param index This is the index of x Axis to cut the maze on. 
 	   * @return int[][] Defines a 2D maze.
 	   */
-	public int[][] getCrossSectionByX(int index){
+	public int[][] getCrossSectionByX(int index) throws IndexOutOfBoundsException{
 		index = index * 2 + 1;
 		
 		if(index >= xLength || index < 0)
@@ -160,7 +160,7 @@ public class Maze3d implements Serializable{
 	   * @param index This is the index of y Axis to cut the maze on. 
 	   * @return int[][] Defines a 2D maze.
 	   */
-	public int[][] getCrossSectionByY(int index){
+	public int[][] getCrossSectionByY(int index) throws IndexOutOfBoundsException{
 		index = index * 2 + 1;
 		
 		if(index >= yLength || index < 0)
@@ -182,7 +182,7 @@ public class Maze3d implements Serializable{
 	   * @param index This is the index of z Axis to cut the maze on. 
 	   * @return int[][] Defines a 2D maze.
 	   */
-	public int[][] getCrossSectionByZ(int index){
+	public int[][] getCrossSectionByZ(int index) throws IndexOutOfBoundsException{
 		index = index * 2 + 1;
 		
 		if(index >= zLength || index < 0)
@@ -466,38 +466,46 @@ public class Maze3d implements Serializable{
 	}
 	
 	//Print the maze, Y Axis is diverse for readability
-	public void printMaze(){
+	public String printMaze(){
+		StringBuilder sb = new StringBuilder();
 		for (int i=0; i< xLength;i++){
 			for (int j=yLength-1; j>= 0;j--){
 				for (int k=0; k<zLength;k++){
 					if(i== startPosition.getX() && j == startPosition.getY() && k == startPosition.getZ())
-						System.out.print("E"+" ");
+						sb.append("E"+" ");
 					else if(i== goalPosition.getX() && j == goalPosition.getY() && k == goalPosition.getZ())
-						System.out.print("X"+" ");
+						sb.append("X"+" ");
 					else{
 						if(maze[i][j][k] == 1 && k==0)
-							System.out.print(j+" ");
+							sb.append(j+" ");
 						else if(maze[i][j][k] == 1)
-							System.out.print("| ");
+							sb.append("| ");
 						else
-							System.out.print(maze[i][j][k]+" ");
+							sb.append(maze[i][j][k]+" ");
 					}
 				}
-				System.out.print("\n");
+				sb.append("\n");
 			}
-			System.out.print("\n");
-		}		
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 	//Print maze2d from getcross method
-	public void printMaze2d(int [][]maze2d){
-		
-		for(int i=0; i<maze2d.length;i++){
-			for (int j=0;j<maze2d[i].length;j++){
-				System.out.print(maze2d[i][j] + " ");
+	public String printMaze2d(int [][]maze2d){
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0 ; i < maze2d.length ; i++)
+		{
+			for(int j = 0 ; j < maze2d[0].length ; j++)
+			{
+				sb.append(maze2d[i][j]);
 			}
-			System.out.print("\n");
+			sb.append("\n");
 		}
+
+		return sb.toString();
 	}
+	
+
 	
 	
 	//Return odd numbers in range, assumes start is 0
@@ -524,6 +532,44 @@ public class Maze3d implements Serializable{
                         }
                 }
         }
+	}
+	
+	/**
+	 * equals method checks if this Maze3d equal to other Maze3d
+	 * @param obj is an other Maze3d
+	 * @return true if Maze3ds equals, false either
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		
+		Maze3d other = (Maze3d) obj;
+		
+		if (this.xLength != other.xLength)
+			return false;
+		if (this.yLength != other.yLength)
+			return false;
+		if (this.zLength != other.zLength)
+			return false;
+		if(!this.startPosition.equals(other.startPosition))
+			return false;
+		if(!this.goalPosition.equals(other.goalPosition))
+			return false;
+		
+		for(int i=0;i<xLength;i++){
+		  for(int j=0;j<yLength;j++){
+		    for(int k=0;k<zLength;k++){
+		    	if(this.maze[i][j][k] != other.maze[i][j][k])
+		    		return false;
+			}
+		  }
+		}
+		return true;
 	}
 	
 }

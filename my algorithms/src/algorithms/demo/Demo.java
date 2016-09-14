@@ -33,7 +33,7 @@ public class Demo {
 		Solution<Position> sol1= mySearcher1.search(mySearchableMaze);
 		
 		//Print
-		maze.printMaze();
+		System.out.println(maze.printMaze());
 		System.out.println("BFS: "+mySearcher.getNumberOfNodesEvaluated());
 		System.out.println("DFS: "+mySearcher1.getNumberOfNodesEvaluated());
 

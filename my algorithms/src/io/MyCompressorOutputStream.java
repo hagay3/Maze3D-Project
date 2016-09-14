@@ -25,6 +25,7 @@ public class MyCompressorOutputStream extends OutputStream
 		this.count=0;
 
 	}
+	
 	/**
 	 * returning output stream source
 	 * @return output stream source
@@ -32,6 +33,7 @@ public class MyCompressorOutputStream extends OutputStream
 	public OutputStream getOut() {
 		return out;
 	}
+	
 	/**
 	 * setting output stream source
 	 * @param out output stream source
@@ -41,10 +43,9 @@ public class MyCompressorOutputStream extends OutputStream
 	}
 	
 	
-	
-	
 	/**
-	 * Compressing data and then writing to data source
+	 * Compressing data and then writing to data source.
+	 * @param num is the number to write into out data member.
 	 */
 	@Override
 	public void write(int num) throws IOException 
@@ -71,7 +72,6 @@ public class MyCompressorOutputStream extends OutputStream
 		}
 		else//new byte,lets write the previus ones
 		{
-			System.out.println("count: "+(int)count+" previousByte: "+(int)previousByte);
 			out.write(previousByte);
 			out.write(count);
 			this.previousByte=num;
@@ -80,14 +80,16 @@ public class MyCompressorOutputStream extends OutputStream
 
 	}
 	/**
-	 * writing byte array to data source
+	 * Writing byte array to data source.
+	 * @param byteArr is an array of byte to write into.
 	 */
 	@Override
 	public void write(byte[] byteArr) throws IOException 
 	{
 		//because the write method that get only integer didn't write the last byte,
 		//we have to override this method,and writing the last byte the data source
-		super.write(byteArr);//first calling super's method
+		//first calling super's method
+		super.write(byteArr);
 		if(count>0)//writing the last byte
 		{
 			

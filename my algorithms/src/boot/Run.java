@@ -60,19 +60,19 @@ private static void testMazeGenerator(Maze3dGenerator mg){
 		
 		int[][] maze2dx=maze.getCrossSectionByX(2);
 		
-		maze.printMaze2d(maze2dx);
+		System.out.println(maze.printMaze2d(maze2dx));
 		
 		System.out.print("\n");
 		
 		int[][] maze2dy=maze.getCrossSectionByY(3);
 		
-		maze.printMaze2d(maze2dy);
+		System.out.println(maze.printMaze2d(maze2dy));
 		
 		System.out.print("\n");
 		
 		int[][] maze2dz=maze.getCrossSectionByZ(0);
 		
-		maze.printMaze2d(maze2dz);
+		System.out.println(maze.printMaze2d(maze2dz));
 		
 		// this should throw an exception!
 		
@@ -131,36 +131,7 @@ private static void testMazeGenerator(Maze3dGenerator mg){
 	   byte[] encoded = Files.readAllBytes(Paths.get(path));
 	   return new String(encoded, encoding);
 	}
-	
-	// convert InputStream to String
-		private static String getStringFromInputStream(InputStream is) {
 
-			BufferedReader br = null;
-			StringBuilder sb = new StringBuilder();
 
-			String line;
-			try {
-
-				br = new BufferedReader(new InputStreamReader(is));
-				while ((line = br.readLine()) != null) {
-					sb.append(line);
-				}
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (br != null) {
-					try {
-						br.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-			return sb.toString();
-
-		}
-
-	}
+}
 
