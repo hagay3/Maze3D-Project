@@ -24,6 +24,9 @@ public class BFS<T> extends CommonSearcher<T> {
 	*/
 	@Override
 	public Solution<T> search(Searchable s) {
+		if(s == null)
+			return null;
+		
 		//Fetch the start state from Searchable and add it to open list
 		openList.add(s.getStartState());
 		//Get the goal state, this will be the loop breaker to know when we have the solution
