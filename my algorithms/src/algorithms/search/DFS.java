@@ -1,10 +1,7 @@
 package algorithms.search;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.Stack;
 
 
@@ -23,7 +20,9 @@ public class DFS<T> extends CommonSearcher<T> {
 		this.stateStack=new Stack<State<T>>();
 		this.visited = new ArrayList<State<T>>();
 	}
-	 
+	/**
+	* {@inheritDoc}
+	*/
 	@Override
 	public Solution<T> search(Searchable s) {
 		//Add the startState to the stack

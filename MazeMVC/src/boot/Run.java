@@ -2,6 +2,7 @@ package boot;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+
 import model.Model;
 import model.MyModel;
 import view.MyView;
@@ -15,6 +16,7 @@ public class Run {
        		
        		Model m = new MyModel();
        		View  v = new MyView(new BufferedReader(new InputStreamReader(System.in)),new PrintWriter(System.out));
+       	       		
        		Controller c = new MyController(v,m);
        		v.setController(c);
        		m.setController(c);

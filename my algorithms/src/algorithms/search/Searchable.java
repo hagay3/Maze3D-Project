@@ -1,7 +1,6 @@
 package algorithms.search;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This interface is used define the Searchable object behavior.

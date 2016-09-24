@@ -1,12 +1,15 @@
 package algorithms.search;
 
+import java.io.Serializable;
+
 /**
  * This class is used to define A State in a specific problem.
  * The problem is a 3D maze.
  */
 
 
-public class State<T> implements Comparable<State<T>> {
+public class State<T> implements Comparable<State<T>>,Serializable {
+	private static final long serialVersionUID = 42L;
 	private State<T> cameFrom;
 	private double cost;
 	private T value;
@@ -48,6 +51,11 @@ public class State<T> implements Comparable<State<T>> {
 		return value.toString();
 	}
 	
+	/**
+	 * Check if 2 given States equal
+	 * @param obj , its the other State
+	 * @return boolean true for equality and false either 
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

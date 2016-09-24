@@ -5,10 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import algorithms.mazeGenerators.GrowingTreeGenerator;
 import algorithms.mazeGenerators.Maze3d;
-import algorithms.mazeGenerators.Position;
 import algorithms.mazeGenerators.newestCell;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;

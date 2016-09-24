@@ -9,26 +9,29 @@ import controller.Controller;
 
 public interface Model {
 	/**
+	 * Sets controller
+	 * @param Controller 
+	 */
+	public void setController(Controller controller);
+	/**
 	 * Handling the command :dir <path>
 	 * @param args Array of strings,containing one string with path
 	 */
-	
-	public void setController(Controller controller);
 	public void HandleDirPath(String[] paramArray);
 	/**
-	 * Handling the command:generate 3d maze <name> <x> <y> <z> <algorithm>
+	 * Handling the command: generate 3d maze <name> <x> <y> <z> <algorithm> [growing_tree_optiopns]
 	 * name-name of the maze,x-amount of floors in maze,y-amount of rows,z-amount of columns,
-	 * algorithm-prim/simple (generating algorithms)
-	 * @param paramArray Array of strings with the parameters i mentioned above
+	 * algorithm-simple / growing (generating algorithms)
+	 * @param paramArray Array of strings with the parameters mentioned above
 	 */
 	public void handleGenerate3dMaze(String[] paramArray);
 	/**
-	 * Handling the command:display <name>(name of the maze)
+	 * Handling the command:display <name> (name of the maze)
 	 * @param paramArray Array with one string,the name of the maze that needs to be displayed
 	 */
 	public void handleDisplayName(String[] paramArray);
 	/**
-	 * Handling the command:display cross section by {x,y,z} <index> for <name>
+	 * Handling the command:display_cross_section {x,y,z} <index> <name>
 	 * @param paramArray Array of strings containing the parameters above
 	 */
 	public void handleDisplayCrossSectionBy(String[] paramArray);
@@ -44,19 +47,7 @@ public interface Model {
 	 * @param paramArray array of strings with file name and maze name
 	 */
 	public void handleLoadMaze(String[] paramArray);
-	/**
-	 * handling command:maze size <name>
-	 * measure the size of maze in memory
-	 * @param paramArray array of one string with the name of the file
-	 */
-	public void handleMazeSize(String[] paramArray);
-	/**
-	 * handling command:file size <name>
-	 * measure the size of maze in a file
-	 * @param paramArray array with one string that contain the maze name,than i will find the file of this maze,
-	 * and check the size of the maze in this file
-	 */
-	public void handleFileSize(String[] paramArray);
+	
 	/**
 	 * handle command:solve <name> <algorithm>
 	 * solves the maze specified,with specified algorithm
@@ -70,8 +61,10 @@ public interface Model {
 	 */
 	public void handleDisplaySolution(String[] paramarray);
 	/**
-	 * closing the running threads
-	 * @param emptyArr there is nothing there
+	 * handle command:exit
+	 * release any left overs resources: threds, files
+	 * @param paramarray array of one string with the name of the maze
 	 */
-	public void handleExitCommand(String[] emptyArr);
+	public void handleExit(String[] paramarray);
+
 }

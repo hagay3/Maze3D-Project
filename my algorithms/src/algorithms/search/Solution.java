@@ -1,5 +1,6 @@
 package algorithms.search;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,12 @@ import java.util.List;
  * This class is used to define the solution that Searcher figured out in Searchable object.
  */
 
-public class Solution<T> {
+public class Solution<T> implements Serializable{
+	/**
+	 * serial number
+	 */
+	private static final long serialVersionUID = 42L;
+	
 	private List<State<T>> states = new ArrayList<State<T>>();
 
 	public List<State<T>> getStates() {

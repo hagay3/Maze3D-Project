@@ -3,7 +3,6 @@ package algorithms.demo;
 import algorithms.mazeGenerators.GrowingTreeGenerator;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
-import algorithms.mazeGenerators.SimpleMaze3dGenerator;
 import algorithms.mazeGenerators.newestCell;
 import algorithms.search.BFS;
 import algorithms.search.DFS;
@@ -21,15 +20,17 @@ public class Demo {
 		//Set growing maze generator
 		GrowingTreeGenerator mg = new GrowingTreeGenerator(new newestCell());
 		// generate another 3d maze
-		Maze3d maze=mg.generate(3,3,3);
+		Maze3d maze=mg.generate(10,10,10);
 	
 		//Declare search algorithims - BFS
 		SearchableMaze<Position> mySearchableMaze = new SearchableMaze<Position>(maze);
 		Searcher<Position> mySearcher = new BFS<Position>();
+		@SuppressWarnings("unused")
 		Solution<Position> sol= mySearcher.search(mySearchableMaze);
 
 		//Declare search algorithims - DFS
 		Searcher<Position> mySearcher1 = new DFS<Position>();
+		@SuppressWarnings("unused")
 		Solution<Position> sol1= mySearcher1.search(mySearchableMaze);
 		
 		//Print

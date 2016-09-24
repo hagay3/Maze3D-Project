@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import controller.Command;
 
@@ -14,11 +12,11 @@ import controller.Command;
  *
  */
 
-public class CLI extends Thread{
+public class CLI {
 	BufferedReader in;
 	PrintWriter out;
-	HashMap<String,Command> stringToCommand;
-	ExecutorService CLIthreadPool;
+	HashMap<String, Command> stringToCommand;
+
 	/**
 	 * constructor using fields
 	 * @param in the input source
@@ -27,25 +25,29 @@ public class CLI extends Thread{
 	public CLI(BufferedReader in, PrintWriter out) {
 		this.in = in;
 		this.out = out;
-		
-	}
-	
-	public void setCommands(HashMap<String, Command> commands) {
-		this.stringToCommand = commands;
-	}
-	
-	private void printMenu() {
-		out.print("Choose command: \n\n");
-		
-		for (String command : stringToCommand.keySet()) {
-			out.print(command + "\n");
-		}
-		
-		out.flush();
+
 	}
 	
 	/**
-	 * starts the command line interface
+	 * Setter for commands
+	 * @param commands , HashMap for commands
+	 */
+	public void setCommands(HashMap<String, Command> commands) {
+		this.stringToCommand = commands;
+	}
+
+	private void printMenu() {
+		out.print("Choose command: \n\n");
+
+		for (String command : stringToCommand.keySet()) {
+			out.print(command + "\n");
+		}
+
+		out.flush();
+	}
+
+	/**
+	 * starts thread for command line interface
 	 */
 	public void start() {
 		Thread thread = new Thread(new Runnable() {
@@ -53,43 +55,46 @@ public class CLI extends Thread{
 			@Override
 			public void run() {
 				while (true) {
-				
+
 					printMenu();
 					try {
 						String commandLine = in.readLine();
 						String arr[] = commandLine.split(" ");
-						String command = arr[0];			
+						String command = arr[0];
+
 						
-						if(!stringToCommand.containsKey(command)) {
+						if (!stringToCommand.containsKey(command)) {
 							out.println("Command doesn't exist");
 							out.flush();
 						}
-						//Break if the user chose 'exit'
-						else if(command.intern().equals("exit")){
-							out.println("Bye bye");
-							out.flush();
-							break;
-						}
+
 						else {
 							String[] args = null;
 							if (arr.length > 1) {
-								String commandArgs = commandLine.substring(
-										commandLine.indexOf(" ") + 1);
-								args = commandArgs.split(" ");							
+								String commandArgs = commandLine
+										.substring(commandLine.indexOf(" ") + 1);
+								args = commandArgs.split(" ");
 							}
 							
-							//Execute desired command
-							Command cmd = stringToCommand.get(command);	
-							cmd.doCommand(args);	
+							// Execute desired command
+							Command cmd = stringToCommand.get(command);
+							cmd.doCommand(args);
+							
+							// Break if the user chose 'exit'
+							if (command.equals("exit")) {
+								out.println("Bye bye");
+								out.flush();
+								break;
+							}
 						}
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-			}			
+			}
 		});
-		thread.start();		
+		//Start the thread
+		thread.start();
 	}
 	/**
 	 * getter of input stream source

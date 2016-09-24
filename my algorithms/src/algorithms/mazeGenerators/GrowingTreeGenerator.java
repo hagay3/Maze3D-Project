@@ -19,6 +19,9 @@ public class GrowingTreeGenerator extends Maze3dGeneratorAbstract {
 		this.cellSelector = selector;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Maze3d generate (int x, int y, int z){
 		Maze3d growMaze = new Maze3d(2*x+1, 2*y+1, 2*z+1);
 		growMaze.fillWithWalls();

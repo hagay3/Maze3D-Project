@@ -11,12 +11,18 @@ import java.util.Random;
 /**
  * This class defines a 3D Maze in a real world.
  */
-public class Maze3d {
+public class Maze3d implements Serializable{
 	
 	
+	/**
+	 * serial number
+	 */
+	private static final long serialVersionUID = 42L;
+	private String name;
 	protected int[][][] maze;
 	protected Position startPosition,goalPosition;
 	protected int xLength,yLength,zLength;
+	
 	
 	
 	/**
@@ -24,32 +30,30 @@ public class Maze3d {
 	 * @param byteArr byte array
 	 * @throws IOException 
 	 */
-	public Maze3d(byte[] byteArr) throws IOException
-	{
-		ByteArrayInputStream in=new ByteArrayInputStream(byteArr);
-		DataInputStream dis=new DataInputStream(in);
-		
-		//creating a stream that reads primitive types easier
-		this.xLength=dis.readInt();
-		this.yLength=dis.readInt();
-		this.zLength=dis.readInt();
-		
-		maze=new int[xLength][yLength][zLength];
-		
-		for(int i=0;i<xLength;i++)
-		{
-			for(int j=0;j<yLength;j++)
-			{
-				for(int n=0;n<zLength;n++)
-				{
-					maze[i][j][n]=dis.read();//reads byte
-					
+	public Maze3d(byte[] byteArr) throws IOException {
+		name = new String("");
+		ByteArrayInputStream in = new ByteArrayInputStream(byteArr);
+		DataInputStream dis = new DataInputStream(in);
+
+		// creating a stream that reads primitive types easier
+		this.xLength = dis.readInt();
+		this.yLength = dis.readInt();
+		this.zLength = dis.readInt();
+
+		maze = new int[xLength][yLength][zLength];
+
+		for (int i = 0; i < xLength; i++) {
+			for (int j = 0; j < yLength; j++) {
+				for (int n = 0; n < zLength; n++) {
+					maze[i][j][n] = dis.read(); // reads byte
+
 				}
 			}
 		}
-		
-		startPosition = new Position(dis.readInt(), dis.readInt(), dis.readInt());
-		
+
+		startPosition = new Position(dis.readInt(), dis.readInt(),
+				dis.readInt());
+
 		goalPosition = new Position(dis.readInt(), dis.readInt(), dis.readInt());
 	}
 	
@@ -64,7 +68,7 @@ public class Maze3d {
 	 * @return byte array with the maze details
 	 * @throws IOException 
 	 */
-	public byte[] toByteArray() 
+	public byte[] toByteArray() throws IOException
 	{
 		//creating a stream that reads primitive types easier
 		ByteArrayOutputStream bb=new ByteArrayOutputStream();
@@ -100,9 +104,15 @@ public class Maze3d {
 		return bb.toByteArray();
 	}
 	
-	
+	/**
+	 * Maze3d constructor
+	 * @param x axis (floors)
+	 * @param y axis (rows)
+	 * @param z axis (columns)
+	 * @return Maze3d object
+	 */
 	public Maze3d(int x, int y, int z) {
-		
+		name = new String("");
 		this.startPosition = null;
 		this.goalPosition = null;
 		this.xLength = x;
@@ -465,7 +475,10 @@ public class Maze3d {
 		this.maze = maze;
 	}
 	
-	//Print the maze, Y Axis is diverse for readability
+	/**
+	 * Turns maze into String for printable version
+	 * @return String
+	 */
 	public String printMaze(){
 		StringBuilder sb = new StringBuilder();
 		for (int i=0; i< xLength;i++){
@@ -476,9 +489,7 @@ public class Maze3d {
 					else if(i== goalPosition.getX() && j == goalPosition.getY() && k == goalPosition.getZ())
 						sb.append("X"+" ");
 					else{
-						if(maze[i][j][k] == 1 && k==0)
-							sb.append(j+" ");
-						else if(maze[i][j][k] == 1)
+						if(maze[i][j][k] == 1)
 							sb.append("| ");
 						else
 							sb.append(maze[i][j][k]+" ");
@@ -508,7 +519,12 @@ public class Maze3d {
 
 	
 	
-	//Return odd numbers in range, assumes start is 0
+	/**
+	 * Return odd numbers in given range
+	 * @param start number
+	 * @param end number
+	 * @return intp[] , array of odd numbers
+	 */
 	public int[] oddNumbersInRange(int start, int end){
 		int aLen = (end-start-1)/2;
 		int []a = new int[aLen];
@@ -520,7 +536,9 @@ public class Maze3d {
 		return a;
 	}
 	
-	//Fill maze with walls (1)
+	/**
+	 * Fill maze with digit 1 values
+	 */
 	public void fillWithWalls(){
 		for(int i=0;i<xLength;i++)
         {
@@ -570,6 +588,14 @@ public class Maze3d {
 		  }
 		}
 		return true;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

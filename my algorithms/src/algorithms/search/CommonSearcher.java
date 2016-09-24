@@ -1,6 +1,4 @@
 package algorithms.search;
-
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -10,23 +8,24 @@ import java.util.List;
  * @param <T> is the type of class the algorithm will work with.
  */
 
-public abstract class CommonSearcher<T> implements Searcher {
+public abstract class CommonSearcher<T> implements Searcher<T> {
 
 	protected int evaluatedNodes;
-
+	/**
+	* {@inheritDoc}
+	*/
 	@Override
 	public int getNumberOfNodesEvaluated() {
-		//Number of nodes (States) the algorithm has visit to find solution
 		return evaluatedNodes;
 	}
 	
 	
-	 /**
-	   * This method is used backtrace the path between GoalState
-	   * to StartState, it generates the contect of the solution.
-	   * @param goalState is the goalState to backtrace from.
-	   * @return Solution<T> It includes the list of States for solving the problem.
-	   */
+	/**
+	 * This method is used to backtrace the path between GoalState to StartState,
+	 * it generates the content of the solution.
+	 * @param goalState is the goalState to backtrace from.
+	 * @return Solution<T> It includes the list of States for solving the problem.
+	 */
 	protected Solution<T> backTrace(State<T> goalState) {
 		Solution<T> sol = new Solution<T>();
 		

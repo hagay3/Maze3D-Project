@@ -20,10 +20,23 @@ public interface View {
 	 */
 	public void start();
 	
+	/**
+	 * Sets controller
+	 * @param Controller 
+	 */
 	public void setController(Controller controller);
 	
+	/**
+	* Setter for commands
+	* @param commands 
+	*/
 	public void setCommands(HashMap<String, Command> commands);
 	
+	
+	/**
+	* Add a notification that maze is ready 
+	* @param name of the maze
+	*/
 	public void notifyMazeIsReady(String name);
 	/**
 	 * initialize the data structure which holds the commands names and objects
@@ -41,10 +54,6 @@ public interface View {
 	 * @param message string telling what is the error
 	 */
 	public void showError(String message);
-	/**
-	 * displaying help,which shows the commands the client can write
-	 */
-	public void showHelp();
 	
 	/**
 	 * displaying the specified maze
@@ -66,16 +75,6 @@ public interface View {
 	 * @param str string with the word:maze has been loaded
 	 */
 	public void showLoadMaze(String str);
-	/**
-	 * display the maze size in memory(bytes)
-	 * @param size the size of the maze in bytes
-	 */
-	public void showMazeSize(int size);
-	/**
-	 * display the maze size in file(bytes)
-	 * @param length the size of the maze in file
-	 */
-	public void showFileSize(long length);
 	/**
 	 * displaying the string:solution for maze is ready
 	 * @param message string with the words:solution for maze is ready

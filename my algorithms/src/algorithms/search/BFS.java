@@ -1,6 +1,4 @@
 package algorithms.search;
-
-import java.nio.file.ClosedDirectoryStreamException;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
@@ -20,11 +18,10 @@ public class BFS<T> extends CommonSearcher<T> {
 		this.openList=new PriorityQueue<State<T>>();
 		this.closedList= new ArrayList<State<T>>();
 	}
+	
 	/**
-	 * Override Searcher method search (implement abstract method from CommonSearcher)
-	 * @param s Searchable<T> type 
-	 * @return Solution to the problem 
-	 */
+	* {@inheritDoc}
+	*/
 	@Override
 	public Solution<T> search(Searchable s) {
 		//Fetch the start state from Searchable and add it to open list

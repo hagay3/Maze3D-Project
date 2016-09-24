@@ -17,6 +17,7 @@ public class MyCompressorOutputStream extends OutputStream
 	/**
 	 * constructor using fields
 	 * @param out output stream source
+	 * @return MyCompressorOutputStream object
 	 * 
 	 */
 	public MyCompressorOutputStream(OutputStream out) {
@@ -48,34 +49,32 @@ public class MyCompressorOutputStream extends OutputStream
 	 * @param num is the number to write into out data member.
 	 */
 	@Override
-	public void write(int num) throws IOException 
-	{
-		if(count==0)//if it is the first time we writing something to data source
+	public void write(int num) throws IOException {
+		if (count == 0)// if it is the first time we writing something to data
+						// source
 		{
-			this.previousByte=num;
-			this.count=1;
+			this.previousByte = num;
+			this.count = 1;
 			return;
 		}
-		
-		
-		if(num==this.previousByte)//if we read the same byte,count it
+
+		if (num == this.previousByte)// if we read the same byte,count it
 		{
-			
+
 			count++;
-			//if there are more than 255 bytes from the same type,write the byte than 255 and than starting count again
-			if(count==256)
-			{
+			// if there are more than 255 bytes from the same type,write the
+			// byte than 255 and than starting count again
+			if (count == 256) {
 				out.write(previousByte);
 				out.write(255);
-				count=1;
+				count = 1;
 			}
-		}
-		else//new byte,lets write the previus ones
+		} else// new byte,lets write the previous ones
 		{
 			out.write(previousByte);
 			out.write(count);
-			this.previousByte=num;
-			this.count=1;
+			this.previousByte = num;
+			this.count = 1;
 		}
 
 	}

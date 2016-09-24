@@ -1,7 +1,5 @@
 package algorithms.demo;
 import java.util.ArrayList;
-import java.util.List;
-
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Searchable;
@@ -12,6 +10,7 @@ import algorithms.search.State;
  * Its purpose is to be sent to the actual Searcher algorithm.
  */
 
+@SuppressWarnings({ "hiding", "unchecked" })
 public class SearchableMaze<Position> implements Searchable{
 
 	private Maze3d maze;
@@ -22,12 +21,14 @@ public class SearchableMaze<Position> implements Searchable{
 	}
 	
 	
+	
 	@Override
 	public <Position> State<Position> getStartState() {
 		return new State<Position>((Position)maze.getFirstCellAfterShellPostition(maze.getStartPosition()));
 	}
 	
 
+	
 	@Override
 	public <Position> State<Position> getGoalState() {
 		return new State<Position>((Position)maze.getFirstCellAfterShellPostition(maze.getGoalPosition()));
@@ -38,9 +39,11 @@ public class SearchableMaze<Position> implements Searchable{
 	  * @param s This is the State to check what next steps can be from it.
 	  * @return ArrayList of possible States.
 	  */
+	
 	@Override
 	public <Position> ArrayList<State<Position>> getAllPossibleStates(State<Position> s) {
 		ArrayList<State<Position>> states = new ArrayList<State<Position>>();
+		
 		ArrayList<Position> moves = (ArrayList<Position>) maze.getPossibleMoves((algorithms.mazeGenerators.Position)s.getValue());
 		
 		for (Position pos : moves) {

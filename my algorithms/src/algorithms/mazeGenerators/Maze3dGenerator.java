@@ -10,7 +10,7 @@ public interface Maze3dGenerator {
 	   *  floors,or layers of 3D Cube.
 	   * @param y This is the y Axis of the maze. It is the rows of a 2D maze.
 	   * @param z This is the z Axis of the maze, It is the columns of a 2D maze. 
-	   * @return Maze3D It is a 3d Maze object.
+	   * @return Maze3D , It is a 3d Maze object.
 	   */
 	public Maze3d generate(int x,int y, int z); 
 	

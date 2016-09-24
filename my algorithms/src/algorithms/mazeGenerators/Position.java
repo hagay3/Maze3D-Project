@@ -1,10 +1,14 @@
 package algorithms.mazeGenerators;
 
+import java.io.Serializable;
+
 /**
  * This class Defines a Position in 3D maze in real world.
  */
 
-public class Position {
+public class Position implements Serializable{
+	
+	private static final long serialVersionUID = 42L;
 	private int x,y,z;
 	
 	public Position(int x, int y, int z) {
@@ -49,7 +53,11 @@ public class Position {
 		return "{"+Integer.toString(z)+","+Integer.toString(y)+","+Integer.toString(x)+"}";
 	}
 
-	//Check if a given position is equal to other
+	/**
+	 * Check if 2 given positions is equal
+	 * @param obj , its the other position
+	 * @return boolean true for equality and false either 
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -67,7 +75,9 @@ public class Position {
 			return false;
 		return true;
 	}
-	
+	/**
+	 * Convert position to printable String
+	 */
 	@Override
 	public String toString(){
 		return "{"+x+","+y+","+z+"}";

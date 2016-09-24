@@ -11,6 +11,9 @@ import java.util.Random;
 
 public class SimpleMaze3dGenerator extends Maze3dGeneratorAbstract{
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Maze3d generate (int x, int y, int z){
 		Maze3d simpleMaze = new Maze3d(2*x+1,2*y+1,2*z+1);

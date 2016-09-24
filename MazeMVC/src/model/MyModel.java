@@ -1,5 +1,4 @@
 package model;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -8,12 +7,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import algorithms.demo.SearchableMaze;
 import algorithms.mazeGenerators.GrowingTreeGenerator;
 import algorithms.mazeGenerators.Maze3d;
@@ -23,26 +22,29 @@ import algorithms.mazeGenerators.SimpleMaze3dGenerator;
 import algorithms.mazeGenerators.newestCell;
 import algorithms.mazeGenerators.randomCell;
 import algorithms.search.BFS;
+import algorithms.search.DFS;
 import algorithms.search.Searcher;
 import algorithms.search.Solution;
 import controller.Controller;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
+
 /**
- * generating the code behind each command
+ * Maintain the backend side within "my algorithms" package
+ * It handles the commands and returns the right output back to the controller.
  *
  */
 
-public class MyModel extends CommonModel {
-	private HashMap<String, Maze3d> mazeCollection;//hash map with key-name of maze,value-maze 3d object
+public class MyModel implements Model {
+	//hash map with key-name of maze,value-maze 3d object
+	private HashMap<String, Maze3d> mazeCollection;
+	//Threads pool to handle threads efficiently
 	private ExecutorService threadPool;
-	private HashMap<String, String> mazeToFile;//hash map with key-name of maze,value-the file name where the maze is saved
+	//hash map with key-name of maze,value-the file name where the maze is saved
+	private HashMap<String, String> mazeToFile;
 	private Controller controller;	
-	
 	//hash map that hold the solution for mazes
-	//I generated hashCode in maze3d,in order to find solution i already have
-	//(if i got the same maze the hash code will find it,and the program will not need to solve them again)
-	HashMap<Maze3d, Solution<Position>> mazeSolutions;
+	HashMap<String, Solution<Position>> mazeSolutions;
 
 	/**
 	 * {@inheritDoc}
@@ -51,9 +53,13 @@ public class MyModel extends CommonModel {
 		mazeCollection = new HashMap<String, Maze3d>();
 		threadPool = Executors.newCachedThreadPool();
 		mazeToFile = new HashMap<String, String>();
-		mazeSolutions = new HashMap<Maze3d, Solution<Position>>();
+		mazeSolutions = new HashMap<String, Solution<Position>>();
+		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setController(Controller controller) {
 		this.controller = controller;
 	}
@@ -63,9 +69,7 @@ public class MyModel extends CommonModel {
 	 */
 	public void HandleDirPath(String[] paramArray) {
 
-		if (paramArray == null || paramArray.length != 1) // path does'nt
-															// entered
-		{
+		if (paramArray == null || paramArray.length != 1) {
 			controller.passError("Invalid path");
 			return;
 		}
@@ -73,7 +77,8 @@ public class MyModel extends CommonModel {
 
 		if ((f.list() != null) && (f.list().length > 0)) {
 			controller.passDirPath(f.list());
-		} else if (f.list() == null) // invalid path
+			// invalid path
+		} else if (f.list() == null) 
 		{
 			controller.passError("Invalid path");
 			return;
@@ -89,10 +94,12 @@ public class MyModel extends CommonModel {
 	 * {@inheritDoc}
 	 */
 	public void handleGenerate3dMaze(String[] paramArray) {
+
+		if (paramArray == null) {
+			controller.passError("Invalid number of parameters");
+			return;
+		}
 		
-		threadPool.execute(new Runnable(){
-			@Override
-			public void run() {
 		if (paramArray.length != 5 && paramArray.length != 6) {
 			controller.passError("Invalid number of parameters");
 			return;
@@ -108,77 +115,64 @@ public class MyModel extends CommonModel {
 			controller.passError("Invalid parameters");
 			return;
 		}
-
-		Maze3dGenerator mg = null;
-		String mazeName = paramArray[0].toString(); 
 		
-		if (paramArray[4].intern() == "simple") {
-			mg = new SimpleMaze3dGenerator();
-		} else if (paramArray[4].intern() == "growing") {
+		//Set the paramArray to variables
+		String mazeName = paramArray[0];
+		int x = Integer.parseInt(paramArray[1]);
+		int y = Integer.parseInt(paramArray[2]);
+		int z = Integer.parseInt(paramArray[3]);
+		String algorithm = paramArray[4];
+		
 
-			if (paramArray.length != 6) {
-				controller.passError("Invalid number of parameters");
-				return;
-			} else if (paramArray[5].intern() == "newest") {
-				// Set growing maze generator
-				mg = new GrowingTreeGenerator(new newestCell());
-				// generate another 3d maze
-			} else if (paramArray[5].intern() == "random") {
-				// Set growing maze generator
-				mg = new GrowingTreeGenerator(new randomCell());
-			}
-		} else {
-			controller.passError("Invalid algorithm name");
+		if (mazeCollection.containsKey(mazeName)) {
+			controller.passError("This maze name already exists,choose another one.");
 			return;
 		}
+		
+		threadPool.execute(new Runnable() {
+			@Override
+			public void run() {
+				
+				String growingOption = "";
+				if(paramArray.length == 6)
+					growingOption = paramArray[5].toString();
+				Maze3dGenerator mg = null;
+				
 
-		if (mazeCollection.containsKey(mazeName) {
-			controller.passError("This name already exists,choose another one.");
-			return;
-		}
-				Maze3d maze = mg.generate(Integer.parseInt(paramArray[1]),
-						Integer.parseInt(paramArray[2]),
-						Integer.parseInt(paramArray[3]));
-				// Add to maze collection the maze
+				if (algorithm.equals("simple") && paramArray.length == 5) {
+					//Set Simple maze generator
+					mg = new SimpleMaze3dGenerator();
+				} else if (algorithm.equals("growing") && paramArray.length == 6) {
+					
+					if (growingOption.equals("newest")) {
+						// Set growing maze generator
+						mg = new GrowingTreeGenerator(new newestCell());
+						// generate another 3d maze
+					} else if (growingOption.equals("random")) {
+						// Set growing maze generator
+						mg = new GrowingTreeGenerator(new randomCell());
+					}
+				} else {
+					controller.passError("Invalid algorithm name or parameters");
+					return;
+				}
+
+				//Generate the maze
+				Maze3d maze = mg.generate(x,y,z);
+				// Add the maze to maze collection
 				mazeCollection.put(mazeName, maze);
 				controller.notifyMazeIsReady(mazeName);
 			}
 		});
-
 	}
 	
 
-	public class RunnableMazeGenerator implements Runnable{
-		
-		private Maze3dGenerator mazeGenerator;
-		private Maze3d maze;
-		private int x,y,z;
-		
-		public RunnableMazeGenerator(Maze3dGenerator m,int x,int y,int z){
-			this.mazeGenerator = m;
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-		@Override
-		public void run() {
-			maze = mazeGenerator.generate(x, y, z);
-			controller.notifyMazeIsReady();
-			
-		}
-		
-		public Maze3d getMaze(){
-			return maze;
-		}
-
-	}
-	
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	public void handleDisplayName(String[] paramArray) {
-		if (paramArray.length != 1) {
+		if (paramArray == null || paramArray.length != 1) {
 			controller.passError("Invalid command");
 			return;
 		}
@@ -188,16 +182,21 @@ public class MyModel extends CommonModel {
 			return;
 		}
 
-		// getting the maze from maze collection
-		controller.passDisplayName(mazeCollection.get(paramArray[0].toString()).toByteArray());
-		
+		try {
+			// getting the maze from maze collection
+			controller.passDisplayName(mazeCollection.get(
+					paramArray[0].toString()).toByteArray());
+		} catch (IOException e) {
+			controller.passError(e.getMessage());
+		}
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void handleDisplayCrossSectionBy(String[] paramArray) {
-		if (paramArray.length != 3) {
+		if (paramArray== null || paramArray.length != 3) {
 			controller.passError("Invalid amount of parameters");
 			return;
 		}
@@ -207,48 +206,57 @@ public class MyModel extends CommonModel {
 			controller.passError("This maze doesn't exists");
 			return;
 		}
-
-		if (paramArray[0].intern() == "x") {
-			Maze3d maze = mazeCollection.get(paramArray[2].toString());
+		
+		//Checking if actual valid digits given
+		try {
+			if (Integer.parseInt(paramArray[1]) < 0) {
+				controller.passError("Invalid parameters");
+				return;
+			}
+		} catch (NumberFormatException e) {
+			controller.passError("Invalid parameters");
+			return;
+		}
+		//Get the index
+		int index;
+		try{
+			index = Integer.parseInt(paramArray[1]);
+		} catch(NumberFormatException e){
+			controller.passError("The index is not an integer:" + e.getMessage());
+			return;
+		}
+		
+		String axis = paramArray[0];
+		String mazeName = paramArray[2];
+		Maze3d maze = mazeCollection.get(mazeName);
+		
+		
+		
+		if (axis.equals("x")) {
 			try {
-				int[][] crossSection = maze.getCrossSectionByX(Integer
-						.parseInt(paramArray[1]));
+				int[][] crossSection = maze.getCrossSectionByX(index);
 				controller.passDisplayCrossSectionBy(maze
 						.printMaze2d(crossSection));
-				return;
-			} catch (NumberFormatException e) {
-				controller.passError("Invalid parameters");
 				return;
 			} catch (IndexOutOfBoundsException e) {
 				controller.passError("Invalid x coordinate");
 				return;
 			}
-
-		} else if (paramArray[0].intern() == "y") {
-			Maze3d maze = mazeCollection.get(paramArray[2].toString());
+		} else if (axis.equals("y")) {
 			try {
-				int[][] crossSection = maze.getCrossSectionByY(Integer
-						.parseInt(paramArray[1]));
+				int[][] crossSection = maze.getCrossSectionByY(index);
 				controller.passDisplayCrossSectionBy(maze
 						.printMaze2d(crossSection));
-				return;
-			} catch (NumberFormatException e) {
-				controller.passError("Invalid parameters");
 				return;
 			} catch (IndexOutOfBoundsException e) {
 				controller.passError("Invalid y coordinate");
 				return;
 			}
-		} else if (paramArray[0].intern() == "z") {
-			Maze3d maze = mazeCollection.get(paramArray[2].toString());
-			try {
-				int[][] crossSection = maze.getCrossSectionByZ(Integer
-						.parseInt(paramArray[1]));
+		} else if (axis.equals("z")) {
+			try{
+				int[][] crossSection = maze.getCrossSectionByZ(index);
 				controller.passDisplayCrossSectionBy(maze
 						.printMaze2d(crossSection));
-				return;
-			} catch (NumberFormatException e) {
-				controller.passError("Invalid parameters");
 				return;
 			} catch (IndexOutOfBoundsException e) {
 				controller.passError("Invalid z coordinate");
@@ -265,38 +273,44 @@ public class MyModel extends CommonModel {
 	 */
 	public void handleSaveMaze(String[] paramArray) {
 
-		if (paramArray.length != 2) {
+		if (paramArray == null || paramArray.length != 2) {
 			controller.passError("Invalid amount of parameters");
 			return;
 		}
+		
+		String mazeName = paramArray[0];
+		String mazeFileName = paramArray[1];
 
-		if (!(mazeCollection.containsKey(paramArray[0]))) {
+		if (!(mazeCollection.containsKey(mazeName))) {
 			controller.passError("maze doesn't exists");
 			return;
 		}
-		// saving the name of the maze,with the file where the maze is saved,in
-		// order to use it later in file size command
-		mazeToFile.put(paramArray[0], paramArray[1]);
+		
+		if (mazeToFile.containsValue(mazeFileName)) {
+			controller.passError("File already exists");
+			return;
+		}
+		
+		// get Maze3d object
+		Maze3d maze = mazeCollection.get(mazeName);
 
-		Maze3d maze = mazeCollection.get(paramArray[0].toString());
-
-		int size = maze.toByteArray().length;
-
-		try {
-			MyCompressorOutputStream out = new MyCompressorOutputStream(
-					new FileOutputStream(paramArray[1].toString()));
-			// first writing the size of the maze
-			out.write(ByteBuffer.allocate(4).putInt(size).array());
-			out.write(maze.toByteArray());
-			controller.passSaveMaze(paramArray[0].toString()
-					+ " has been saved");
+		try {			
+			OutputStream out = new MyCompressorOutputStream(
+					new FileOutputStream(mazeFileName));
+			//Convert maze to byte array
+			byte[] byteArr = maze.toByteArray();
+			//Write the size first
+			out.write(ByteBuffer.allocate(4).putInt(byteArr.length).array());
+			out.write(byteArr);
 			out.close();
+			mazeToFile.put(mazeName, mazeFileName);
+			controller.passSaveMaze(mazeName + " has been saved");
 			return;
 		} catch (FileNotFoundException e) {
 			controller.passError("File not found");
 			return;
 		} catch (IOException e) {
-			e.printStackTrace();
+			controller.passError(e.getMessage());
 		}
 
 	}
@@ -305,27 +319,23 @@ public class MyModel extends CommonModel {
 	 * {@inheritDoc}
 	 */
 	public void handleLoadMaze(String[] paramArray) {
-		if (paramArray.length != 2) {
+		if (paramArray == null || paramArray.length != 2) {
 			controller.passError("Invalid amount of parameters");
 			return;
 		}
+		
+		String mazeName = paramArray[1];
+		String mazeFileName = paramArray[0];
+		
 		// checking if there are already maze with the same name
-		if (mazeCollection.containsKey(paramArray[1])) {
-			controller.passError("Invalid name,this name is taken");
+		if (mazeCollection.containsKey(mazeName) || mazeToFile.containsKey(mazeName)) {
+			controller.passError("Invalid name,this maze name is taken");
 			return;
 		}
-
-		if (mazeToFile.containsKey(paramArray[1])) {
-			if (mazeToFile.get(paramArray[1]) != paramArray[0]) {
-				controller.passError("This name already exists");
-				return;
-			}
-		}
-		mazeToFile.put(paramArray[1], paramArray[0]);
+		
 
 		try {
-			MyDecompressorInputStream in = new MyDecompressorInputStream(
-					new FileInputStream(paramArray[0].toString()));
+			MyDecompressorInputStream in = new MyDecompressorInputStream(new FileInputStream(mazeFileName));
 
 			// The ByteArrayOutputStream class stream creates a buffer in memory
 			// and all the data sent to the stream is stored in the buffer.
@@ -338,31 +348,20 @@ public class MyModel extends CommonModel {
 			outByte.write(in.read());
 
 			// creates input stream from a buffer initialize in bracelet
-			ByteArrayInputStream inByte = new ByteArrayInputStream(
-					outByte.toByteArray());// taking out the buffer I wrote to
-			DataInputStream dis = new DataInputStream(inByte);// easier to read
-																// data from
-																// stream(can
-																// read
-																// primitive
-																// types)
+			ByteArrayInputStream inByte = new ByteArrayInputStream(outByte.toByteArray());
+			DataInputStream dis = new DataInputStream(inByte);
 
-			// What I did:created a input stream and wrote there my 4 bytes from
-			// file.
-			// than created input stream,where i put my byte array,than read
-			// from this buffer integer.
-
-			byte[] byteArr = new byte[dis.readInt()];// construct a array of
-														// byte,in the size
-														// readen from file.
+			byte[] byteArr = new byte[dis.readInt()];// construct a array of byte,in the size readen from file.
 			in.read(byteArr);
-			mazeCollection.put(paramArray[1], new Maze3d(byteArr));
-			controller.passLoadMaze(paramArray[1]
-					+ " has been loaded from file: " + paramArray[0]);
 			in.close();
+			Maze3d loaded = new Maze3d(byteArr);
+			
+			mazeCollection.put(mazeName, loaded);
+			mazeToFile.put(mazeName, mazeFileName);
+			controller.passLoadMaze(mazeName + " has been loaded from file "+ mazeFileName);
 			return;
 		} catch (FileNotFoundException e) {
-			controller.passError("File not found");
+			controller.passError("File not found " + e.getMessage());
 			return;
 		} catch (IOException e) {
 
@@ -371,170 +370,97 @@ public class MyModel extends CommonModel {
 
 	}
 
+
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public void handleMazeSize(String[] paramArray) 
-	{
-		if (paramArray.length != 1) 
-		{
-			controller.passError("Invalid number of parameters");
-			return;
-		}
-		if (!mazeCollection.containsKey(paramArray[0])) 
-		{
-			controller.passError("maze doesn't exists");
+	public void handleSolve(String[] paramArray) {
+		if (paramArray == null ||  paramArray.length != 2) {
+			controller.passError("invalid amount of parameters");
 			return;
 		}
 
-		Maze3d maze = mazeCollection.get(paramArray[0]);
-
-		
-		controller.passMazeSize(maze.toByteArray().length);
-		
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	public void handleFileSize(String[] paramArray)
-	{
-		if(paramArray.length!=1)
-		{
-			controller.passError("Invalid amount of parameters");
-			return;
-		}
-		
-		//checking if there is a file that have this maze
-		if(!(mazeToFile.containsKey(paramArray[0])))
-		{
-			controller.passError("maze doesn't exists in file");
-			return;
-		}
-		
-		try
-		{
-			File file=new File(mazeToFile.get(paramArray[0]));//taking the file name from the hashmap
-			controller.passFileSize(file.length());
-			return;
-		}
-		catch (NullPointerException e)
-		{
-			controller.passError("you didn't entered path name");
-			return;
-		}
-		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public void handleSolve(String[] paramArray)
-	{
-		if(paramArray.length!=4)
-		{
-			if(paramArray.length!=2)
-			{
-				controller.passError("invalid amount of parameters");
-				return;
-			}
-		}
-		
 		threadPool.execute(new Runnable() {
-			
-			@Override
-			public void run() 
-			{
-				StringBuilder algo=new StringBuilder();
-				for(int i=1;i<paramArray.length;i++)
-				{
-					if(i==paramArray.length-1)
-					{
-						algo.append(paramArray[i]);
-					}
-					else
-					{
-						algo.append(paramArray[i]+" ");
-					}
-					
 
-				}
-				//check if i generated maze with this name
-				if(!(mazeCollection.containsKey(paramArray[0])))
-				{
+			@Override
+			public void run() {
+				String mazeName = paramArray[0];
+				String algorithm = paramArray[1];
+
+				// check if i generated maze with this name
+				if (!(mazeCollection.containsKey(mazeName))) {
 					controller.passError("Maze doesn't exist");
 					return;
 				}
-				//if i have solution for this maze
-				if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0])))
-				{
-					controller.passSolve("Solution for "+paramArray[0]+ " is ready");
+				// if solution exists for this maze
+				if (mazeSolutions.containsKey(mazeName)) {
+					controller.passSolve("Solution for maze " + mazeName
+							+ " is already done");
 					return;
 				}
-				
-				if(algo.toString().equals("bfs"))
-				{
-					SearchableMaze<Position> ms=new SearchableMaze<Position>(mazeCollection.get(paramArray[0]));
-					
-					Searcher<Position> bfs=new BFS<Position>();
-					Solution<Position> sol=bfs.search(ms);
-					mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
-					
-					controller.passSolve("Solution for "+paramArray[0]+ " is ready");
-					return;
-				}
-				else
-				{
+
+				Searcher<Position> searcher;
+				Solution<Position> sol;
+				SearchableMaze<Position> searchableMaze = new SearchableMaze<Position>(
+						mazeCollection.get(mazeName));
+
+				if (algorithm.equals("bfs")) {
+					searcher = new BFS<Position>();
+				} else if (algorithm.equals("dfs")) {
+					searcher = new DFS<Position>();
+				} else {
 					controller.passError("Invalid algorithm");
 					return;
 				}
-				
+				// Generate solution
+				sol = searcher.search(searchableMaze);
+				mazeSolutions.put(mazeName, sol);
+				controller.passSolve("Solution for " + mazeName + " is ready");
 			}
 		});
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public void handleDisplaySolution(String[] paramarray)
-	{
-		if(paramarray.length!=1)
-		{
+	public void handleDisplaySolution(String[] paramarray) {
+		if (paramarray == null || paramarray.length != 1) {
 			controller.passError("Invalid amount of parameters");
 			return;
 		}
 		
-		if(!(mazeCollection.containsKey(paramarray[0])))
-		{
+		String mazeName = paramarray[0];
+		if (!(mazeCollection.containsKey(mazeName))) {
 			controller.passError("Maze with this name,doesn't exists");
 			return;
 		}
-		
-		if(mazeSolutions.containsKey(mazeCollection.get(paramarray[0])))
-		{
-			//take the object of maze from maze 3d,and pass it to the maze Solution,and it return the solution
-			controller.passDisplaySolution(mazeSolutions.get(mazeCollection.get(paramarray[0])));
+
+		if (mazeSolutions.containsKey(mazeName)) {
+			// take the object of maze from maze 3d,and pass it to the maze
+			// Solution,and it return the solution
+			controller.passDisplaySolution(mazeSolutions.get(mazeName));
 			return;
-		}
-		else
-		{
-			controller.passError("Solution doesn't exists(use solve command first)");
+		} else {
+			controller
+					.passError("Solution doesn't exists(use solve command first)");
 			return;
 		}
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	public void handleExitCommand(String[] emptyArr)
-	{
-		threadPool.shutdown();
-		try 
-		{
-			while(!(threadPool.awaitTermination(10, TimeUnit.SECONDS)));
-		} 
-		catch (InterruptedException e) {
 
-			e.printStackTrace();
+	/**
+	* {@inheritDoc}
+	*/
+	@Override
+	public void handleExit(String[] paramarray) {	
+		//Terminate threads
+		threadPool.shutdownNow();
+		try{
+			threadPool.awaitTermination(100,TimeUnit.MILLISECONDS);
 		}
-		
+		catch (InterruptedException e){
+			controller.passError(e.getMessage());
+		}	
 	}
 	
 }

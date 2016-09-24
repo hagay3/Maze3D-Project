@@ -13,16 +13,17 @@ import algorithms.search.State;
 import controller.Command;
 import controller.Controller;
 
-public class MyView extends CommonView
+public class MyView implements View
 {
 	CLI cli;
-    private BufferedReader in;
+    @SuppressWarnings("unused")
+	private BufferedReader in;
     private PrintWriter out;
 	HashMap<String,Command> stringToCommand;
+	@SuppressWarnings("unused")
 	private Controller controller;
 	/**
 	 * constructor cli arguments
-	 * @param cm controller of this view
 	 * @param input, object for the controller coming data
 	 * @param output, object for the controller outcoming data
 	 */
@@ -41,26 +42,35 @@ public class MyView extends CommonView
 		
 	}
 	
+	/**
+	* {@inheritDoc}
+	*/
 	@Override
 	public void notifyMazeIsReady(String name) {
 		out.println("maze " + name + " is ready");
 		out.flush();
 	}
 	
+	/**
+	* {@inheritDoc}
+	*/
 	@Override
 	public void setCommands(HashMap<String, Command> commands) {
 		cli.setCommands(commands);
 	}
 	
 	/**
-	 * setting the hash map that was initialized in the controller to the view
-	 */
+	* {@inheritDoc}
+	*/
 	public void setStringToCommand(HashMap<String, Command> stringToCommand) 
 	{
 		this.stringToCommand = stringToCommand;
 		cli.setStringToCommand(stringToCommand);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setController(Controller controller) {
 		this.controller = controller;
@@ -126,7 +136,7 @@ public class MyView extends CommonView
 	 */
 	public void showSaveMaze(String str)
 	{
-		System.out.println(str);
+	    out.println(str);
 		out.flush();
 	}
 	/**
@@ -171,29 +181,4 @@ public class MyView extends CommonView
 		out.println(al.toString());
 		out.flush();
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	public void showHelp()
-	{
-       out.println("Help Center:");
-       out.println("dir <path>                                           						-display the files and directories in this specific path.");
-       out.println("generate_3d_maze <name> <x> <y> <z> <algorithm> [growing_tree_option]");
-       out.println("-generating maze with given name,with xyz dimensions");
-       out.println("algorithm: simple/growing");
-       out.println("growing_tree_option: newest/random for cell selection\n");
-       out.println("display <name>                                       						-display the specified maze");
-       out.println("display_cross_section {x,y,z} <index> <maze_name>  				    		-diplaying cross section(x,y or z,chose one) in the index specified for maze with this name");
-       out.println("save_maze <name> <file name>                         						-save maze in file name specified");
-       out.println("load_maze <file name> <name>                        					    -load maze from file specified");
-       out.println("maze_size <name>                                     						-display the size of maze in ram");
-       out.println("file_size <name>                                     						-display the size of maze in file");
-       out.println("solve <name> <algorithm>                             						-solve maze with specified algorithm:bfs/dfs");
-       out.println("display_solution <name>                              						-solve the maze and show the solution");
-       out.println("exit                                                 						-exit the program");
-       out.println();
-       out.println("<> -You have to write the requested string inside,{} -choose one of the fallwing and write inside the brackets");
-       out.flush();
-	}
-	
 }

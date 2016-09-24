@@ -6,11 +6,19 @@ import view.View;
 
 /**
  * the controller links between the view and the model,which don't know each other
- *
  */
 public interface Controller {
-	
+
+	/**
+	 * notify the view when the maze is ready
+	 * @param name of the maze
+	 */
 	public void notifyMazeIsReady(String name);
+	
+	/**
+	 * initcommands will create the map between the cli command and the command object
+	 */
+	public void initCommands();
 	
 	/**
 	 * sets the model of the controller,in order to initialize the controller in the main
@@ -62,18 +70,6 @@ public interface Controller {
 	 * @param str message,maze has been loaded
 	 */
 	public void passLoadMaze(String str);
-	
-	/**
-	 * passing the maze size in memory
-	 * @param size maze size in memory in bytes
-	 */
-	public void passMazeSize(int size);
-	
-	/**
-	 * passing the maze size in file
-	 * @param length maze size in file in bytes
-	 */
-	public void passFileSize(long length);
 	
 	/**
 	 * passing a message that the maze has been solved

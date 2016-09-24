@@ -17,6 +17,7 @@ public class MyDecompressorInputStream extends InputStream {
 	/**
 	 * constructor with parameters
 	 * @param in input stream source
+	 * @return MyDecompressorInputStream Object
 	 */
 	public MyDecompressorInputStream(InputStream in) {
 		super();

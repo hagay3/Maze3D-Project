@@ -7,9 +7,19 @@ package algorithms.mazeGenerators;
 
 public abstract class Maze3dGeneratorAbstract implements Maze3dGenerator{
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public abstract Maze3d generate(int x, int y, int z);
 	
+	/**
+	 * Measures the time takes to generate a maze
+	 * @param x axis
+	 * @param y axis
+	 * @param z axis
+	 * @return String time in the format "100 Milliseconds" 
+	 */
 	@Override
 	public String measureAlgorithmTime(int x, int y, int z)
 	{
