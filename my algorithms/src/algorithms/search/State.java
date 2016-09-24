@@ -45,7 +45,6 @@ public class State<T> implements Comparable<State<T>>,Serializable {
 	}
 	
 	
-	
 	@Override
 	public String toString() {
 		return value.toString();
