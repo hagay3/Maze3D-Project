@@ -1,4 +1,4 @@
-package view;
+package GUI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,8 +208,6 @@ public class MazeDisplay extends Canvas {
 	 *This method readraw the canvas in runnable sync
 	 */
 	public void redrawMe() {
-	
-		
 		getDisplay().syncExec(new Runnable() {
 
 			@Override
