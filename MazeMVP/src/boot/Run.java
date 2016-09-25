@@ -15,11 +15,14 @@ public class Run {
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
 		XMLManager xml = new XMLManager();
 		xml.readXML("resources/properties.xml");
-		MyModel model = new MyModel(xml.getProperties());
+		Properties properties = xml.getProperties();
+		
+		MyModel model = new MyModel(properties);
 		CommonView view = null;
 		
-		if(xml.getProperties().getTypeOfUserInterfece().equals("gui")){
-			view = new MazeWindow(xml.getProperties());
+		
+		if(properties.getTypeOfUserInterfece().equals("gui")){
+			view = new MazeWindow(properties);
 		}else{
 			view = new MyView(new BufferedReader(new InputStreamReader(System.in)),new PrintWriter(System.out));
 		}

@@ -176,7 +176,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
-	public void handleDisplayName(String[] paramArray) {
+	public void handleShowMaze(String[] paramArray) {
 		if (paramArray == null || paramArray.length != 1) {
 			notifyMyObservers("error Invalid command");
 			return;
@@ -303,7 +303,7 @@ public class MyModel extends Observable implements Model{
 
 		try {			
 			OutputStream out = new MyCompressorOutputStream(
-					new FileOutputStream(mazeFileName));
+					new FileOutputStream("resources/" + mazeFileName));
 			//Convert maze to byte array
 			byte[] byteArr = maze.toByteArray();
 			//Write the size first
@@ -342,7 +342,7 @@ public class MyModel extends Observable implements Model{
 		
 
 		try {
-			MyDecompressorInputStream in = new MyDecompressorInputStream(new FileInputStream(mazeFileName));
+			MyDecompressorInputStream in = new MyDecompressorInputStream(new FileInputStream("resources/" + mazeFileName));
 
 			// The ByteArrayOutputStream class stream creates a buffer in memory
 			// and all the data sent to the stream is stored in the buffer.

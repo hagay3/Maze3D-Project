@@ -41,8 +41,7 @@ public class CommandsManager {
 
 			@Override
 			public void doCommand(String[] args) {
-				m.handleDisplayName(args);
-
+				m.handleShowMaze(args);
 			}
 
 		});

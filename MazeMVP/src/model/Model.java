@@ -2,7 +2,6 @@ package model;
 
 import java.io.IOException;
 import java.util.HashMap;
-
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
@@ -30,7 +29,7 @@ public interface Model {
 	 * Handling the command:display <name> (name of the maze)
 	 * @param paramArray Array with one string,the name of the maze that needs to be displayed
 	 */
-	public void handleDisplayName(String[] paramArray);
+	public void handleShowMaze(String[] paramArray);
 	/**
 	 * Handling the command:display_cross_section {x,y,z} <index> <name>
 	 * @param paramArray Array of strings containing the parameters above
@@ -70,7 +69,7 @@ public interface Model {
 	
 	/**
 	 * notify the observers
-	 * @param s for args
+	 * @param s for arguments
 	 */
 	public void notifyMyObservers(String s);
 	
@@ -83,7 +82,9 @@ public interface Model {
 	
 	/**
 	 * load solutions from zip file
-	 * @throws IOException,ClassNotFoundException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @return solutions HashMap
 	 */
 	public HashMap<Maze3d, Solution<Position>> loadGzipSolutions() throws IOException, ClassNotFoundException;
 	
