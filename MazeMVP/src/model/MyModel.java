@@ -161,6 +161,7 @@ public class MyModel extends Observable implements Model{
 						return;
 					}
 				}
+				
 				//Generate the maze
 				Maze3d maze = mg.generate(x,y,z);
 				// Add the maze to maze collection

@@ -27,9 +27,10 @@ public abstract class BasicWindow extends CommonView implements Runnable {
 		exit();
 	}
 	/**
-	 * Exit method, dispose gui window
+	 * Exit method, dispose gui windows
 	 */
 	public void exit(){
+		shell.dispose(); //dispose shell
 		display.dispose(); // dispose OS components
 	}
 }

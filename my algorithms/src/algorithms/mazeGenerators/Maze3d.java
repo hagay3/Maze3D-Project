@@ -282,140 +282,167 @@ public class Maze3d implements Serializable{
 		}
 	}
 	
-		//Move position by direction
-		public Position movePosition(Position p, String direction){
-			int x = p.getX();
-			int y = p.getY();
-			int z = p.getZ();
-			
-			switch (direction){
-				case "right":
-					return new Position(x,y,z+2);
-				case "left":
-					return new Position(x,y,z-2);					
-				case "up":
-					return new Position(x,y+2,z);
-				case "down":
-					return new Position(x,y-2,z);
-				case "forward":
-					return new Position(x+2,y,z);
-				case "backward":
-					return new Position(x-2,y,z);
-				default:
-					throw new IllegalArgumentException("Illegal Direction: "+direction);
-			}
+	// Move position by direction
+	public Position movePosition(Position p, String direction) {
+		int x = p.getX();
+		int y = p.getY();
+		int z = p.getZ();
+
+		switch (direction) {
+		case "right":
+			return new Position(x, y, z + 2);
+		case "left":
+			return new Position(x, y, z - 2);
+		case "up":
+			return new Position(x, y + 2, z);
+		case "down":
+			return new Position(x, y - 2, z);
+		case "forward":
+			return new Position(x + 2, y, z);
+		case "backward":
+			return new Position(x - 2, y, z);
+		default:
+			throw new IllegalArgumentException("Illegal Direction: "
+					+ direction);
 		}
-	
-		//Check by the position given if its on the shell of the maze
-		public boolean isInShell(Position p)
-		{
-			return ((p.getZ() == 0 || p.getZ() == this.zLength - 1) || (p.getY() == 0 || p.getY() == this.yLength - 1) || (p.getX() == 0 || p.getX() == this.xLength - 1));
+	}
+
+	// Move character by direction
+	public Position moveCharacter(Position p, String direction) {
+		int x = p.getX();
+		int y = p.getY();
+		int z = p.getZ();
+
+		switch (direction) {
+		case "right":
+			return new Position(x, y, z + 1);
+		case "left":
+			return new Position(x, y, z - 1);
+		case "up":
+			return new Position(x, y + 1, z);
+		case "down":
+			return new Position(x, y - 1, z);
+		case "forward":
+			return new Position(x + 2, y, z);
+		case "backward":
+			return new Position(x - 2, y, z);
+		default:
+			throw new IllegalArgumentException("Illegal Direction: "
+					+ direction);
 		}
-		
-		//Check by the position given if its out of the shell boundaries
-		public boolean isOutOfMaze(Position p)
-		{
-			return ((p.getZ() < 0 || p.getZ() > this.zLength - 1) || (p.getY() < 0 || p.getY() > this.yLength - 1) || (p.getX() < 0 || p.getX() > this.xLength - 1));
-		}
-	
-	
-		//Returns the first cell after shell position that is inside the maze and not in the shell
-		public Position getFirstCellAfterShellPostition(Position p){
-			int x = p.getX();
-			int y = p.getY();
-			int z = p.getZ();
-			
-			if(x == 0)
-				x ++;
-			if(x == xLength - 1)
-				x --;
-			if(y == 0)
-				y ++;
-			if(y == yLength - 1)
-				y --;
-			if(z == 0)
-				z ++;
-			if(z == zLength - 1)
-				z --;
-			
-			return new Position(x, y, z);
-			
-		}
-		 
-	
-	//Check the positions given is a neighbors,space is to manipulate the check for shell positions when needed
-	public boolean isNeighbors(Position p1,Position p2,int space){
+	}
+
+	// Check by the position given if its on the shell of the maze
+	public boolean isInShell(Position p) {
+		return ((p.getZ() == 0 || p.getZ() == this.zLength - 1)
+				|| (p.getY() == 0 || p.getY() == this.yLength - 1) || (p.getX() == 0 || p
+				.getX() == this.xLength - 1));
+	}
+
+	// Check by the position given if its out of the shell boundaries
+	public boolean isOutOfMaze(Position p) {
+		return ((p.getZ() < 0 || p.getZ() > this.zLength - 1)
+				|| (p.getY() < 0 || p.getY() > this.yLength - 1) || (p.getX() < 0 || p
+				.getX() > this.xLength - 1));
+	}
+
+	// Returns the first cell after shell position that is inside the maze and
+	// not in the shell
+	public Position getFirstCellAfterShellPostition(Position p) {
+		int x = p.getX();
+		int y = p.getY();
+		int z = p.getZ();
+
+		if (x == 0)
+			x++;
+		if (x == xLength - 1)
+			x--;
+		if (y == 0)
+			y++;
+		if (y == yLength - 1)
+			y--;
+		if (z == 0)
+			z++;
+		if (z == zLength - 1)
+			z--;
+
+		return new Position(x, y, z);
+
+	}
+
+	// Check the positions given is a neighbors,space is to manipulate the check
+	// for shell positions when needed
+	public boolean isNeighbors(Position p1, Position p2, int space) {
 		int p1x = p1.getX();
 		int p1y = p1.getY();
 		int p1z = p1.getZ();
-		
+
 		int p2x = p2.getX();
 		int p2y = p2.getY();
 		int p2z = p2.getZ();
-		
-		if(p1x == p2x && p1y == p2y && (p1z == p2z-space || p1z == p2z+space))
+
+		if (p1x == p2x && p1y == p2y
+				&& (p1z == p2z - space || p1z == p2z + space))
 			return true;
-		if(p1x == p2x && p1z == p2z && (p1y == p2y-space || p1y == p2y+space))
+		if (p1x == p2x && p1z == p2z
+				&& (p1y == p2y - space || p1y == p2y + space))
 			return true;
-		if(p1y == p2y && p1z == p2z && (p1x == p2x-space || p1x == p2x+space))
+		if (p1y == p2y && p1z == p2z
+				&& (p1x == p2x - space || p1x == p2x + space))
 			return true;
-			
+
 		return false;
 	}
-	
-	
-	//Randomize a position in the shell of the cube (maze)
-	public Position randomPositionInShell()
-	{
-		int x ,y ,z;
-		//Random number
+
+	// Randomize a position in the shell of the cube (maze)
+	public Position randomPositionInShell() {
+		int x, y, z;
+		// Random number
 		Random r = new Random();
-	
-		//Randomize on the 6 sides of the cube
+
+		// Randomize on the 6 sides of the cube
 		int side = r.nextInt(6);
-		
-		//Randomize x,y,z axis with length
-		//Make sure the number is not in the shell
-		int []xValidValues = oddNumbersInRange(0, xLength);
-		int []yValidValues = oddNumbersInRange(0, yLength);
-		int []zValidValues = oddNumbersInRange(0, zLength);
-		
+
+		// Randomize x,y,z axis with length
+		// Make sure the number is not in the shell
+		int[] xValidValues = oddNumbersInRange(0, xLength);
+		int[] yValidValues = oddNumbersInRange(0, yLength);
+		int[] zValidValues = oddNumbersInRange(0, zLength);
+
 		x = xValidValues[r.nextInt(xValidValues.length)];
 		y = yValidValues[r.nextInt(yValidValues.length)];
 		z = zValidValues[r.nextInt(zValidValues.length)];
-		
-		
+
 		switch (side) {
-		
-		//First slice of the maze (x axis)
+
+		// First slice of the maze (x axis)
 		case 0:
 			x = 0;
 			break;
-		//Last slice of the maze (x axis)
-		case 1: 
+		// Last slice of the maze (x axis)
+		case 1:
 			x = xLength - 1;
 			break;
-		//First slice of the maze (y axis) 
+		// First slice of the maze (y axis)
 		case 2:
 			y = 0;
 			break;
-		//Last slice of the maze (y axis)
+		// Last slice of the maze (y axis)
 		case 3:
 			y = yLength - 1;
 			break;
-	    //First slice of the maze (z axis)
+		// First slice of the maze (z axis)
 		case 4:
 			z = 0;
 			break;
-		//Last slice of the maze (z axis)
+		// Last slice of the maze (z axis)
 		case 5:
 			z = zLength - 1;
 			break;
 		}
-		
-		return  new Position(x, y, z);
+
+		return new Position(x, y, z);
 	}
-	
 
 	
 

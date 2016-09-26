@@ -1,6 +1,8 @@
 package GUI;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -12,7 +14,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+
+import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
+
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 
 
 /**
@@ -43,35 +50,36 @@ public class MazeDisplay extends Canvas {
 	private Position goalPosition;
 	private List<Point> downHint;
 	private List<Point> upHint;
+	private Maze3d maze;
+	private MazeWindow mazeWindow;
 
 	/**
 	 * Constructor 
 	 * @param Composite parent, int style, MyView view
 	 * draw the maze
 	 */
-	public MazeDisplay(Composite parent, int style) {
+	public MazeDisplay(Composite parent, int style,MazeWindow mazeWindow,Maze3d maze) {
 		super(parent, style);
-		
-		this.mazeName = null;
-		this.whichFloorAmI = 0;
-		this.character = new Character();
-		this.character.setPos(new Position(-1, -1, -1));
-		this.imgGoal = new Image(null,"resources/images/apple.png");
-		this.imgWinner = new Image(null,"resources/images/winner.gif");
-		this.imgUp = new Image(null, "resources/images/up.gif");
-		this.imgDown = new Image(null, "resources/images/down.gif");
-		this.imgUpDown = new Image(null, "resources/images/updown.gif");
-		this.imgWall = new Image(null, "resources/images/wall.gif");
-		this.drawMeAHint = false;
-		this.hintPosition = null;
-		this.winner = false;
-		this.goalPosition= new Position(-1, -1, -1);
-		this.upHint = new ArrayList<Point>();
-		this.downHint = new ArrayList<Point>();
+		this.maze = maze;
+		this.mazeWindow = mazeWindow;
+		character = new Character();
+		if(character.getPos() != null)
+			whichFloorAmI = character.getPos().getX();
+		character.setPos(new Position(-1, -1, -1));
+		imgGoal = new Image(null,"resources/images/apple.png");
+		imgWinner = new Image(null,"resources/images/winner.gif");
+		imgUp = new Image(null, "resources/images/up.gif");
+		imgDown = new Image(null, "resources/images/down.gif");
+		imgUpDown = new Image(null, "resources/images/updown.gif");
+		imgWall = new Image(null, "resources/images/wall.gif");
+		drawMeAHint = false;
+		winner = false;
+		goalPosition= new Position(-1, -1, -1);
+		upHint = new ArrayList<Point>();
+		downHint = new ArrayList<Point>();
 
 		// draw the maze
-		this.addPaintListener(new PaintListener() {
-			
+		addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
 				int x, y;
@@ -83,7 +91,6 @@ public class MazeDisplay extends Canvas {
 				e.gc.setForeground(new Color(null, 1, 255, 0));
 				e.gc.setBackground(new Color(null, 0, 0, 0));
 
-				
 				for (int i = 0; i < crossSection.length; i++) {
 					for (int j = 0; j < crossSection[i].length; j++) {
 						x = j * cellWidth;
@@ -102,7 +109,7 @@ public class MazeDisplay extends Canvas {
 				
 				if (!winner) {
 					character.draw(cellWidth, cellHeight, e.gc);
-					if (whichFloorAmI == goalPosition.getZ())
+					if (whichFloorAmI == goalPosition.getX())
 						e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
 				} else
 					e.gc.drawImage(imgWinner, 0, 0, imgWinner.getBounds().width, imgWinner.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
@@ -122,6 +129,26 @@ public class MazeDisplay extends Canvas {
 				}
 			}
 		});
+		
+		
+	}
+		
+	
+	
+	public void moveChracter(String direction) throws IOException {
+		showMessageBox("before the if");
+		if (maze.possibleStep(character.getPos(), direction)) {
+			
+			showMessageBox("passed the if");
+			//byte [] b = maze.toByteArray();
+			//String mazeByteArrayString = new String(b, "UTF-8");
+			//mazeWindow.showMaze(mazeByteArrayString);
+			//Position nextPos = maze.moveCharacter(character.getPos(), direction);
+			//int[][] crossSection = maze.getCrossSectionByX((character.getPos().getX() - 1) / 2);
+			///setCrossSection(crossSection, null, null);
+			//setCharacterPosition(character.getPos());
+		}
+		
 	}
 		
 	
@@ -170,7 +197,7 @@ public class MazeDisplay extends Canvas {
 	 */
 	public void moveTheCharacter(Position pos) {
 		this.character.setPos(pos);
-		//redrawMe();
+		redrawMe();
 	}
 	/**
 	 * setMazeName 
@@ -221,4 +248,6 @@ public class MazeDisplay extends Canvas {
 			}
 		});
 	}
+
+
 }

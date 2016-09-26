@@ -1,8 +1,13 @@
 package GUI;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Random;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
@@ -76,7 +81,6 @@ public class MazeWindow extends BasicWindow {
 		btnGenerateMaze.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-
 				showGenerateMazeOptions();
 			}
 			@Override
@@ -100,15 +104,17 @@ public class MazeWindow extends BasicWindow {
 			}
 			
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
+		//Set layout to maze display
+		mazeDisplay = new MazeDisplay(shell, SWT.NONE,this,null);
+		mazeDisplay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		mazeDisplay.setFocus();
 	}
 
 	protected void showGenerateMazeOptions() {
+		
 		
 		Shell generateWindowShell = new Shell(display, SWT.TITLE | SWT.CLOSE);
 		generateWindowShell.setText("Generate maze window");
@@ -141,19 +147,22 @@ public class MazeWindow extends BasicWindow {
 		lblRows.setText("Rows: ");
 		Text txtRows = new Text(generateWindowShell, SWT.BORDER);
 		txtRows.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtRows.setText("5");
+		txtRows.setText("6");
 		
 		Label lblCols = new Label(generateWindowShell, SWT.NONE);
 		lblCols.setText("Columns: ");
 		Text txtCols = new Text(generateWindowShell, SWT.BORDER);
 		txtCols.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtCols.setText("5");
+		txtCols.setText("6");
 		
 		Label lblName = new Label(generateWindowShell, SWT.NONE);
 		lblName.setText("Name: ");
 		Text txtName = new Text(generateWindowShell, SWT.BORDER);
 		txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtName.setText("Maze1");
+		Random rand = new Random();
+		int  n = rand.nextInt(100) + 1;
+		String randomMazeName = "Maze"+Integer.toString(n);
+		txtName.setText(randomMazeName);
 		
 		Button btnStartGame = new Button(generateWindowShell, SWT.PUSH);
 		btnStartGame.setText("Play!");
@@ -168,7 +177,6 @@ public class MazeWindow extends BasicWindow {
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				
 				setChanged();
 				notifyObservers("generate_3d_maze" + " " + txtName.getText()
 						+ " " + txtFloors.getText() + " " + txtRows.getText()
@@ -183,15 +191,58 @@ public class MazeWindow extends BasicWindow {
 			public void widgetDefaultSelected(SelectionEvent arg0) { }
 			
 		});
-		
+
 		generateWindowShell.open();
-	
+
+		mazeDisplay.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				String direction = null;
+				switch (e.keyCode) {
+				case SWT.ARROW_RIGHT:
+					direction = "right";
+					break;
+				case SWT.ARROW_LEFT:
+					direction = "left";
+					break;
+				case SWT.ARROW_UP:
+					direction = "up";
+					break;
+				case SWT.ARROW_DOWN:
+					direction = "down";
+					break;
+				case SWT.PAGE_DOWN:
+					direction = "forward";
+					break;
+				case SWT.PAGE_UP:
+					direction = "backward";
+					break;
+				default:
+					break;
+				}
+				if (direction != null) {
+					showMessageBox(direction);
+					try {
+						mazeDisplay.moveChracter(direction);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					//redraw();
+				}
+			}
+		});
 	}
 
 	@Override
 	public void notifyMazeIsReady(String name) {
 
-		Display.getDefault().asyncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				setChanged();
 				notifyObservers("display " + name);
@@ -211,11 +262,6 @@ public class MazeWindow extends BasicWindow {
 		});
 	}
 	
-	//@Override
-	public void displayMessage(String msg) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void start() {
@@ -274,29 +320,20 @@ public class MazeWindow extends BasicWindow {
 	@Override
 	public void showMaze(String mazeByteArrString) {
 		try {
-		
-		byte[] byteArr = mazeByteArrString.getBytes(StandardCharsets.UTF_8);
-		//Convert maze from byeArray
-		Maze3d maze3d = new Maze3d(byteArr);
-		mazeDisplay = new MazeDisplay(shell, SWT.BORDER);
-		mazeDisplay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		mazeDisplay.setFocus();
-		Position startPos = maze3d.getFirstCellAfterShellPostition(maze3d.getStartPosition());
-		mazeDisplay.setCharacterPosition(startPos);
-		
-		int [][] crossSection = maze3d.getCrossSectionByZ(startPos.getZ());
-		
-		mazeDisplay.setCrossSection(crossSection, null, null);
-		mazeDisplay.setGoalPosition(new Position(3,4,2));
-		mazeDisplay.setMazeName("Maze1");
-		
-		
-		} 
-		catch (IOException e) 
-		{
+
+			byte[] byteArr = mazeByteArrString.getBytes(StandardCharsets.UTF_8);
+			// Convert maze from byeArray
+			Maze3d maze3d = new Maze3d(byteArr);
+			Position startPos = maze3d.getFirstCellAfterShellPostition(maze3d.getStartPosition());
+			mazeDisplay.setCharacterPosition(startPos);
+			int[][] crossSection = maze3d.getCrossSectionByX((startPos.getX()-1)/2);
+			mazeDisplay.setCrossSection(crossSection, null, null);
+			mazeDisplay.setGoalPosition(maze3d.getGoalPosition());
+			mazeDisplay.setMazeName(maze3d.getName());
+
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
 }
