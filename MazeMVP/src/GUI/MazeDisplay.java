@@ -1,10 +1,7 @@
 package GUI;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -12,10 +9,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-
 import algorithms.mazeGenerators.Position;
-import view.MyView;
+
 
 /**
  * MazeDisplay
@@ -28,6 +26,7 @@ import view.MyView;
  */
 public class MazeDisplay extends Canvas {
 	
+	@SuppressWarnings("unused")
 	private String mazeName;
 	private int whichFloorAmI;
 	private int[][] crossSection = { {0}, {0} };
@@ -75,11 +74,7 @@ public class MazeDisplay extends Canvas {
 			
 			@Override
 			public void paintControl(PaintEvent e) {
-				
-				   
-				
 				int x, y;
-				
 				int canvasWidth = getSize().x;
 				int canvasHeight = getSize().y;
 				int cellWidth = canvasWidth / crossSection[0].length;
@@ -88,6 +83,7 @@ public class MazeDisplay extends Canvas {
 				e.gc.setForeground(new Color(null, 1, 255, 0));
 				e.gc.setBackground(new Color(null, 0, 0, 0));
 
+				
 				for (int i = 0; i < crossSection.length; i++) {
 					for (int j = 0; j < crossSection[i].length; j++) {
 						x = j * cellWidth;
@@ -95,7 +91,6 @@ public class MazeDisplay extends Canvas {
 						if (crossSection[i][j] != 0)
 							//e.gc.fillRectangle(x, y, cellWidth, cellHeight);
 							e.gc.drawImage(imgWall, 0, 0, imgWall.getBounds().width, imgWall.getBounds().height, x, y, cellWidth, cellHeight);
-						
 					}
 				}
 				
@@ -111,11 +106,10 @@ public class MazeDisplay extends Canvas {
 						e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
 				} else
 					e.gc.drawImage(imgWinner, 0, 0, imgWinner.getBounds().width, imgWinner.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
-				
-				
 				forceFocus();
 			}
 			
+			@SuppressWarnings("unused")
 			private void paintUpDownHints(PaintEvent e, int i, int j, int cellWidth, int cellHeight) {
 				Point upDownHint = new Point(i, j);
 				if (upHint.contains(upDownHint) && downHint.contains(upDownHint))
@@ -209,13 +203,22 @@ public class MazeDisplay extends Canvas {
 	 */
 	public void redrawMe() {
 		getDisplay().syncExec(new Runnable() {
-
 			@Override
 			public void run() {
-				setEnabled(true);
+				//setEnabled(true);
 				redraw();
 			}
-			
+		});
+	}
+
+	public void showMessageBox(String str) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MessageBox msg = new MessageBox(new Shell(),
+						SWT.ICON_INFORMATION);
+				msg.setMessage(str);
+				msg.open();
+			}
 		});
 	}
 }

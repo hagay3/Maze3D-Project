@@ -44,7 +44,7 @@ public class Properties implements Serializable {
 	 */
 	public Properties(){
 		this.numberOfThreads = 10;
-		this.algorithmToGenerateMaze = "simple";
+		this.algorithmToGenerateMaze = "growing random";
 		this.algorithmToSearch = "bfs";
 		this.typeOfUserInterfece = "gui";
 	}

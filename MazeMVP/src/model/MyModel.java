@@ -63,6 +63,7 @@ public class MyModel extends Observable implements Model{
 		threadPool = Executors.newFixedThreadPool(properties.getNumberOfThreads());
 		mazeToFile = new HashMap<String, String>();
 		mazeSolutions = loadGzipSolutions();
+		
 		if(mazeSolutions == null){
 			mazeSolutions = new HashMap<Maze3d, Solution<Position>>();
 		}
@@ -160,7 +161,6 @@ public class MyModel extends Observable implements Model{
 						return;
 					}
 				}
-
 				//Generate the maze
 				Maze3d maze = mg.generate(x,y,z);
 				// Add the maze to maze collection

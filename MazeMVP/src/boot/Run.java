@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-
 import GUI.MazeWindow;
 import presenter.*;
 import view.CommonView;
@@ -22,7 +21,7 @@ public class Run {
 		CommonView view = null;
 		
 		
-		if(properties.getTypeOfUserInterfece().equals("cli")){
+		if(properties.getTypeOfUserInterfece().equals("gui")){
 			view = new MazeWindow(properties);
 		}else{
 			view = new MyView(new BufferedReader(new InputStreamReader(System.in)),new PrintWriter(System.out));
@@ -32,5 +31,6 @@ public class Run {
 		view.addObserver(presenter);
 		model.addObserver(presenter);
 		view.start();
+		
 	}
 }

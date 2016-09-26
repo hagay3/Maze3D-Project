@@ -1,23 +1,18 @@
 package GUI;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -28,10 +23,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import presenter.Properties;
-import algorithms.mazeGenerators.GrowingTreeGenerator;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
-import algorithms.mazeGenerators.newestCell;
 
 public class MazeWindow extends BasicWindow {
 
@@ -44,15 +37,19 @@ public class MazeWindow extends BasicWindow {
 	}
 	
 	@Override
+	@SuppressWarnings("unused")
 	protected void initWidgets() {
+	
+		
 		GridLayout gridLayout = new GridLayout(2, false);
 		shell.setLayout(gridLayout);				
 		shell.setText("Maze3d Game");
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
-		Device device = Display.getCurrent ();
-		//Color red = new Color (device, 255, 0, 0);
-		//shell.setBackground(red);
-		shell.setBackgroundImage(new Image(null, "resources/images/backgroundBig.jpg"));
+		shell.setBackgroundImage(new Image(null, "resources/images/light-blue-background.jpg"));
+		
+		
+		//Initialize the menu bar
+		MazeMenu menu = new MazeMenu(this);
 		
 		// Open in center of screen
 		Rectangle bounds = display.getPrimaryMonitor().getBounds();
@@ -79,6 +76,7 @@ public class MazeWindow extends BasicWindow {
 		btnGenerateMaze.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+
 				showGenerateMazeOptions();
 			}
 			@Override
@@ -143,13 +141,13 @@ public class MazeWindow extends BasicWindow {
 		lblRows.setText("Rows: ");
 		Text txtRows = new Text(generateWindowShell, SWT.BORDER);
 		txtRows.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtRows.setText("3");
+		txtRows.setText("5");
 		
 		Label lblCols = new Label(generateWindowShell, SWT.NONE);
-		lblCols.setText("Cols: ");
+		lblCols.setText("Columns: ");
 		Text txtCols = new Text(generateWindowShell, SWT.BORDER);
 		txtCols.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtCols.setText("3");
+		txtCols.setText("5");
 		
 		Label lblName = new Label(generateWindowShell, SWT.NONE);
 		lblName.setText("Name: ");
@@ -192,23 +190,25 @@ public class MazeWindow extends BasicWindow {
 
 	@Override
 	public void notifyMazeIsReady(String name) {
-		showMessageBox("maze is ready");
-		setChanged();
-		notifyObservers("display " + name);
-		
-		/*display.syncExec(new Runnable() {
-			@Override
+
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				setChanged();
 				notifyObservers("display " + name);
 			}
-		});			*/
+		});
+	
+	
 	}
 
-	public void showMessageBox(String str){
-		MessageBox msg = new MessageBox(shell, SWT.ICON_INFORMATION);
-		msg.setMessage(str);
-		msg.open();	
+	public void showMessageBox(String str) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MessageBox msg = new MessageBox(shell, SWT.ICON_INFORMATION);
+				msg.setMessage(str);
+				msg.open();
+			}
+		});
 	}
 	
 	//@Override
@@ -274,33 +274,29 @@ public class MazeWindow extends BasicWindow {
 	@Override
 	public void showMaze(String mazeByteArrString) {
 		try {
-			
-			showMessageBox("showmaze started");
+		
 		byte[] byteArr = mazeByteArrString.getBytes(StandardCharsets.UTF_8);
 		//Convert maze from byeArray
 		Maze3d maze3d = new Maze3d(byteArr);
 		mazeDisplay = new MazeDisplay(shell, SWT.BORDER);
 		mazeDisplay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		mazeDisplay.setFocus();
-		this.mazeDisplay.setCharacterPosition(maze3d.getStartPosition());
+		Position startPos = maze3d.getFirstCellAfterShellPostition(maze3d.getStartPosition());
+		mazeDisplay.setCharacterPosition(startPos);
 		
-		int [][] crossSection = maze3d.getCrossSectionByZ(0);
+		int [][] crossSection = maze3d.getCrossSectionByZ(startPos.getZ());
 		
-		this.mazeDisplay.setCrossSection(crossSection, null, null);
-		this.mazeDisplay.setGoalPosition(new Position(3,4,2));
-		this.mazeDisplay.setMazeName("Maze1");
-	
+		mazeDisplay.setCrossSection(crossSection, null, null);
+		mazeDisplay.setGoalPosition(new Position(3,4,2));
+		mazeDisplay.setMazeName("Maze1");
 		
-		
-			
 		
 		} 
 		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
-		showMessageBox("its the end of show maze");
 		
 	}
-
+	
 }

@@ -1,5 +1,4 @@
 package GUI;
-
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 
@@ -15,7 +14,7 @@ public class Character {
 	 * constractor
 	 */
 	public Character() {
-		this.img = new Image(null, "resources/images/android.png");
+		this.img = new Image(null, "resources/images/ghost-character.png");
 	}
 
 	/**
