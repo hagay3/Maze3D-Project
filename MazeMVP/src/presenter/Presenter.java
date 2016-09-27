@@ -73,6 +73,12 @@ public class Presenter implements Observer {
 			}	
 		}
 		else{ // notification came from model
+			
+			if(!arg.getClass().equals(String.class)){
+				commandsManager.doOtherCommand(arg);
+				return;
+			}
+			
 			String commandLine = (String)arg;
 			String arr[] = commandLine.split(" ");
 			String command = arr[0];

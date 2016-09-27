@@ -85,6 +85,13 @@ public class CommandsManager {
 
 			}
 		});
+		viewCommands.put("get_solution", new Command() {
+			@Override
+			public void doCommand(String[] args) {
+				m.handleGetSolution(args);
+
+			}
+		});
 		viewCommands.put("exit", new Command() {
 			@Override
 			public void doCommand(String[] args) {
@@ -143,7 +150,7 @@ public class CommandsManager {
 		modelCommands.put("passSolve", new Command() {
 			@Override
 			public void doCommand(String[] args) {
-				v.showSolve(args[0]);
+				v.solutionIsReady(args[0]);
 			}
 		});
 
@@ -155,6 +162,10 @@ public class CommandsManager {
 		});
 	}
 
+	public void doOtherCommand(Object object){
+		v.processSolution(object);
+	}
+	
 	public void setM(Model m) {
 		this.m = m;
 	}

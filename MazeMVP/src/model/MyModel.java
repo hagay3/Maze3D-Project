@@ -385,7 +385,7 @@ public class MyModel extends Observable implements Model{
 	 */
 	public void handleSolve(String[] paramArray) {
 		if (paramArray == null ||  paramArray.length != 2) {
-			notifyMyObservers("error Invalid amount of parmaters");
+			notifyMyObservers("error Invalid amount of parmaters\n");
 			return;
 		}
 
@@ -428,7 +428,8 @@ public class MyModel extends Observable implements Model{
 				// Generate solution
 				sol = searcher.search(searchableMaze);
 				mazeSolutions.put(mazeToSolve, sol);
-				notifyMyObservers("passSolve Solution for " + mazeName + " is ready");
+			
+				notifyMyObservers("passSolve " + mazeName);
 			}
 		});
 	}
@@ -437,6 +438,7 @@ public class MyModel extends Observable implements Model{
 	 * {@inheritDoc}
 	 */
 	public void handleDisplaySolution(String[] paramarray) {
+
 		if (paramarray == null || paramarray.length != 1) {
 			notifyMyObservers("error Invalid amount of parmaters");
 			return;
@@ -458,6 +460,37 @@ public class MyModel extends Observable implements Model{
 			return;
 		}
 	}
+	
+	/**
+	 * get the solution object to process on more complex view
+	 * @param paramarray - the maze name to solve and the algorithm bfs/dfs
+	 */
+	@Override
+	public void handleGetSolution(String[] paramarray) {
+
+		if (paramarray == null || paramarray.length != 1) {
+			notifyMyObservers("error Invalid amount of parmaters");
+			return;
+		}
+		String mazeName = paramarray[0];
+		if (!(mazeCollection.containsKey(mazeName))) {
+			notifyMyObservers("error Maze with this name,doesn't exists");
+			return;
+		}
+
+		Maze3d maze = mazeCollection.get(mazeName);
+		if (mazeSolutions.containsKey(maze)) {
+			// take the object of maze from maze 3d,and pass it to the maze
+			// Solution,and it return the solution
+			setChanged();
+			notifyObservers(mazeSolutions.get(maze));
+			return;
+		} else {
+			notifyMyObservers("error Solution doesn't exists (use solve command first)");
+			return;
+		}
+	}
+	
 
 	/**
 	 * {@inheritDoc}

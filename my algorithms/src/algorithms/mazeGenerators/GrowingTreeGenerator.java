@@ -74,7 +74,10 @@ public class GrowingTreeGenerator extends Maze3dGeneratorAbstract {
 			neigbor = next;
 		}
 		//Set goal position after breaing a way through
-		growMaze.setGoalPosition(new Position(neigbor.getX(),neigbor.getY()+1,neigbor.getZ()));
+		Position goal = new Position(neigbor.getX(),neigbor.getY()+1,neigbor.getZ());
+		growMaze.setGoalPosition(goal);
+		growMaze.setCellValue(goal, 0);
+		
 		
 		return growMaze;
 	

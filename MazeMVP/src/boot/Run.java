@@ -13,11 +13,16 @@ import model.MyModel;
 public class Run {
 
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
+		
+		
 		XMLManager xml = new XMLManager();
 		xml.readXML("resources/properties.xml");
 		Properties properties = xml.getProperties();
+		if(args.length == 1){
+			properties.setTypeOfUserInterfece(args[0]);
+		}
+			
 		
-		//properties.setTypeOfUserInterfece("cli");
 		
 		MyModel model = new MyModel(properties);
 		CommonView view = null;

@@ -55,11 +55,17 @@ public interface Model {
 	 */
 	public void handleSolve(String[] paramArray);
 	/**
-	 * handle command:display solution <name>
+	 * handle command:display_solution <name>
 	 * display an existing solution
 	 * @param paramarray array of one string with the name of the maze
 	 */
 	public void handleDisplaySolution(String[] paramarray);
+	/**
+	 * handle command: get_solution <name>
+	 * display an existing solution
+	 * @param paramarray array of one string with the name of the maze
+	 */
+	public void handleGetSolution(String[] paramarray);
 	/**
 	 * handle command:exit
 	 * release any left overs resources: threads, files

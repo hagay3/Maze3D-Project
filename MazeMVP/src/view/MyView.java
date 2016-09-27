@@ -158,9 +158,9 @@ public class MyView extends CommonView {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void showSolve(String message)
+	public void solutionIsReady(String name)
 	{
-		out.println(message);
+		out.println("maze " + name + " is ready");
 		out.flush();
 	}
 	/**
@@ -177,6 +177,12 @@ public class MyView extends CommonView {
 	public void printMenu(String menu) {
 		out.println(menu);
 		out.flush();
+		
+	}
+
+	@Override
+	public void processSolution(Object solution) {
+		// TODO Auto-generated method stub
 		
 	}
 

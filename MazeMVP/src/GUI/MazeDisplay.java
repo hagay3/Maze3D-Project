@@ -35,7 +35,6 @@ import org.eclipse.swt.events.KeyListener;
 public class MazeDisplay extends Canvas {
 	
 	@SuppressWarnings("unused")
-	private String mazeName;
 	private int whichFloorAmI;
 	private int[][] crossSection = { {0}, {0} };
 	private Character character;
@@ -45,6 +44,7 @@ public class MazeDisplay extends Canvas {
 	final private Image imgDown = new Image(null, "resources/images/down.gif");
 	final private Image imgWall = new Image(null, "resources/images/wall.gif");
 	final private Image imgBackwardInMaze = new Image (null, "resources/images/backwardInMaze.png");
+	final private Image imgFinish = new Image (null, "resources/images/finish.png");
 	private boolean drawMeAHint;
 	private Position hintPosition;
 	private boolean winner;
@@ -67,13 +67,8 @@ public class MazeDisplay extends Canvas {
 		if(character.getPos() != null)
 			whichFloorAmI = character.getPos().getX();
 		character.setPos(new Position(-1, -1, -1));
-		
-		
-		
-		
 		drawMeAHint = false;
 		winner = false;
-		goalPosition= new Position(-1, -1, -1);
 		upHint = new ArrayList<Point>();
 		downHint = new ArrayList<Point>();
 
@@ -99,12 +94,16 @@ public class MazeDisplay extends Canvas {
 
 							// e.gc.fillRectangle(z, y, cellWidth,cellHeight);
 							
-							if(crossSection[i][j] == 0){ //Draw backward and forward signs
+							if(!mazeWindow.getMazeName().equals("") && crossSection[i][j] == 0){ //Draw backward and forward signs
 								backwardOrForward = new Position(character.getPos().getX(),i, j);
 								if (possibleMoveFromPosition(backwardOrForward, "backward")){
 									e.gc.drawImage(imgBackwardInMaze, 0, 0,imgBackwardInMaze.getBounds().width,imgBackwardInMaze.getBounds().height, z, y,cellWidth, cellHeight);
+								}else if( i == 0 || i == crossSection.length-1 || j == 0 || j == crossSection[i].length-1){
+									e.gc.drawImage(imgFinish, 0, 0,imgFinish.getBounds().width,imgFinish.getBounds().height, z, y,cellWidth, cellHeight);
 								}
-							} else //Draw walls 
+							}
+						
+							if(crossSection[i][j] == 1) //Draw walls 
 								e.gc.drawImage(imgWall, 0, 0,imgWall.getBounds().width,imgWall.getBounds().height, z, y,cellWidth, cellHeight);
 						}
 					}
@@ -128,8 +127,8 @@ public class MazeDisplay extends Canvas {
 				
 				if (!winner) {
 					character.draw(cellWidth,cellHeight, e.gc);
-					if (whichFloorAmI == goalPosition.getX())
-						e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
+					//if (whichFloorAmI == goalPosition.getX())
+					//	e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
 				} else
 					e.gc.drawImage(imgWinner, 0, 0, imgWinner.getBounds().width, imgWinner.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
 				forceFocus();
@@ -201,7 +200,6 @@ public class MazeDisplay extends Canvas {
 	}
 	
 	public boolean moveChracter(String direction) {
-		
 		if (possibleMoveFromPosition(character.getPos(), direction)) {
 			Position nextPos = maze.moveCharacter(character.getPos(), direction);
 			int[][] crossSection = maze.getCrossSectionByX(nextPos.getX());
@@ -210,8 +208,15 @@ public class MazeDisplay extends Canvas {
 			return true;			
 		}else
 			return false;
-	}	
+	}
 	
+	
+	public void moveChracter(Position pos) {
+		int[][] crossSection = maze.getCrossSectionByX(pos.getX());
+		setCrossSection(crossSection, null, null);
+		setCharacterPosition(pos);
+	}
+
 	/**
 	 * setWinner
 	 * @param winner, boolean
@@ -258,13 +263,6 @@ public class MazeDisplay extends Canvas {
 	public void moveTheCharacter(Position pos) {
 		this.character.setPos(pos);
 		redrawMe();
-	}
-	/**
-	 * setMazeName 
-	 * @param String mazeName
-	 */
-	public void setMazeName(String mazeName) {
-		this.mazeName = mazeName;
 	}
 	
 	/**
@@ -318,13 +316,6 @@ public class MazeDisplay extends Canvas {
 	public Maze3d getMaze() {
 		return maze;
 	}
-
-
-
-	public String getMazeName() {
-		return mazeName;
-	}
-	
 	
 
 }

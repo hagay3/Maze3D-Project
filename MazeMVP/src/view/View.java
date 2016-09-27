@@ -44,10 +44,10 @@ public interface View {
 	 */
 	public void showLoadMaze(String str);
 	/**
-	 * displaying the string:solution for maze is ready
-	 * @param message string with the words:solution for maze is ready
+	 * displaying the string: solution for maze is ready
+	 * @param message string with the words: solution for maze is ready
 	 */
-	public void showSolve(String message);
+	public void solutionIsReady(String message);
 	/**
 	 * displaying the solution of the specified maze
 	 * @param sol the solution of the maze
@@ -55,9 +55,15 @@ public interface View {
 	public void showDisplaySolution(String sol);
 
 	/**
+	 * get solution from model
+	 * @param sol the solution of the maze
+	 */
+	public void processSolution(Object solution);
+
+	
+	/**
 	 * Prints cli menu
 	 * @param menu commands
 	 */
 	public void printMenu(String menu);
-	
 }
