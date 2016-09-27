@@ -37,7 +37,7 @@ public class Character {
 	 *@param gc, GC
 	 */
 	public void draw(int cellWidth, int cellHeight, GC gc) {
-		gc.drawImage(img, 0, 0, img.getBounds().width, img.getBounds().height, cellWidth * pos.getX(), cellHeight * pos.getY(), cellWidth, cellHeight);
+		gc.drawImage(img, 0, 0, img.getBounds().width, img.getBounds().height, cellWidth * pos.getZ(), cellHeight * pos.getY(), cellWidth, cellHeight);
 	}
 	
 }

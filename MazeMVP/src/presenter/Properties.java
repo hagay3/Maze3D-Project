@@ -25,7 +25,7 @@ public class Properties implements Serializable {
 	 * @param algorithmToSearch
 	 *            which algorithm to search the maze:bfs, dfs
 	 * @param algorithmToGenerateMaze
-	 *            which algorithm to generate the maze:prim/simple
+	 *            which algorithm to generate the maze: simple,growing random, growing newest
 	 * @param typeOfUserInterfece
 	 *            which user interface to use:cli/gui
 	 */
@@ -120,7 +120,7 @@ public class Properties implements Serializable {
 	}
 
 	/**
-	 * getting the algorithm we generate with,the maze(prim ,simple)
+	 * getting the algorithm we generate with,the maze(simple ,growing random, growing newest)
 	 * 
 	 * @return name of the algorithm
 	 */

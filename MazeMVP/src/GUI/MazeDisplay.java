@@ -51,6 +51,8 @@ public class MazeDisplay extends Canvas {
 	private List<Point> downHint;
 	private List<Point> upHint;
 	private Maze3d maze;
+	
+
 	private MazeWindow mazeWindow;
 
 	/**
@@ -82,24 +84,33 @@ public class MazeDisplay extends Canvas {
 		addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
-				int x, y;
+				int z, y;
 				int canvasWidth = getSize().x;
 				int canvasHeight = getSize().y;
-				int cellWidth = canvasWidth / crossSection[0].length;
-				int cellHeight = canvasHeight / crossSection.length;
+				int cellHeight = canvasHeight / crossSection[0].length;
+				int cellWidth = canvasWidth / crossSection.length;
+				
 
 				e.gc.setForeground(new Color(null, 1, 255, 0));
 				e.gc.setBackground(new Color(null, 0, 0, 0));
 
-				for (int i = 0; i < crossSection.length; i++) {
+				mazeWindow.comments.append("Character position: " +character.getPos().toString()+"\n");
+				mazeWindow.comments.append("floor: "+Integer.toString(character.getPos().getX())+"\n\n --------------------\n\n");
+				for (int i = 0; i < crossSection.length ; i++) {
 					for (int j = 0; j < crossSection[i].length; j++) {
-						x = j * cellWidth;
+						mazeWindow.comments.append(Integer.toString(crossSection[i][j]));
 						y = i * cellHeight;
+						z = j * cellWidth;
 						if (crossSection[i][j] != 0)
-							//e.gc.fillRectangle(x, y, cellWidth, cellHeight);
-							e.gc.drawImage(imgWall, 0, 0, imgWall.getBounds().width, imgWall.getBounds().height, x, y, cellWidth, cellHeight);
+							e.gc.fillRectangle(z, y, cellWidth,cellHeight);
+							//e.gc.drawImage(imgWall, 0, 0, imgWall.getBounds().width, imgWall.getBounds().height, z, y, cellWidth, cellHeight);
+							 
 					}
+					mazeWindow.comments.append("\n");
 				}
+				if(maze != null)
+					mazeWindow.comments.append(maze.printMaze());
+				
 				
 				if (drawMeAHint) {
 					drawMeAHint = false;
@@ -108,7 +119,7 @@ public class MazeDisplay extends Canvas {
 				
 				
 				if (!winner) {
-					character.draw(cellWidth, cellHeight, e.gc);
+					character.draw(cellWidth,cellHeight, e.gc);
 					if (whichFloorAmI == goalPosition.getX())
 						e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
 				} else
@@ -129,28 +140,32 @@ public class MazeDisplay extends Canvas {
 				}
 			}
 		});
-		
-		
 	}
 		
 	
 	
-	public void moveChracter(String direction) throws IOException {
-		showMessageBox("before the if");
-		if (maze.possibleStep(character.getPos(), direction)) {
-			
-			showMessageBox("passed the if");
-			//byte [] b = maze.toByteArray();
-			//String mazeByteArrayString = new String(b, "UTF-8");
-			//mazeWindow.showMaze(mazeByteArrayString);
-			//Position nextPos = maze.moveCharacter(character.getPos(), direction);
-			//int[][] crossSection = maze.getCrossSectionByX((character.getPos().getX() - 1) / 2);
-			///setCrossSection(crossSection, null, null);
-			//setCharacterPosition(character.getPos());
+	public void moveChracter(String direction) {
+		
+		
+		if (maze.possibleCharacterMove(character.getPos(), direction)) {
+			Position nextPos = maze.moveCharacter(character.getPos(), direction);
+			int[][] crossSection = maze.getCrossSectionByX(nextPos.getX());
+			setCrossSection(crossSection, null, null);
+			setCharacterPosition(nextPos);
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < crossSection.length ; i++) {
+				for (int j = 0; j < crossSection[i].length; j++) {
+					sb.append(crossSection[i][j] + " ");
+				}
+				sb.append("\n");
+			}
+
+			mazeWindow.comments.append("Character position: " +nextPos.toString()+"\n");
+			mazeWindow.comments.append("floor: "+Integer.toString(nextPos.getX())+"\n\n"+sb.toString()+"\n\n --------------------\n\n");
+			mazeWindow.comments.append(maze.printMaze());
 		}
-		
-	}
-		
+	}	
 	
 	/**
 	 * setWinner
@@ -222,7 +237,7 @@ public class MazeDisplay extends Canvas {
 	public void drawHint(Position hintPos) {
 		this.drawMeAHint = true;
 		this.hintPosition = hintPos;
-		//redrawMe();
+		redrawMe();
 	}
 	
 	/**
@@ -232,7 +247,7 @@ public class MazeDisplay extends Canvas {
 		getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				//setEnabled(true);
+				setEnabled(true);
 				redraw();
 			}
 		});
@@ -249,5 +264,8 @@ public class MazeDisplay extends Canvas {
 		});
 	}
 
+	public void setMaze(Maze3d maze) {
+		this.maze = maze;
+	}
 
 }

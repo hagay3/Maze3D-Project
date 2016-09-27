@@ -31,7 +31,7 @@ public class Maze3d implements Serializable{
 	 * @throws IOException 
 	 */
 	public Maze3d(byte[] byteArr) throws IOException {
-		name = new String("");
+		name = "";
 		ByteArrayInputStream in = new ByteArrayInputStream(byteArr);
 		DataInputStream dis = new DataInputStream(in);
 
@@ -51,10 +51,10 @@ public class Maze3d implements Serializable{
 			}
 		}
 
-		startPosition = new Position(dis.readInt(), dis.readInt(),
-				dis.readInt());
-
+		startPosition = new Position(dis.readInt(), dis.readInt(),dis.readInt());
 		goalPosition = new Position(dis.readInt(), dis.readInt(), dis.readInt());
+	
+		
 	}
 	
 	/**
@@ -149,22 +149,17 @@ public class Maze3d implements Serializable{
 	   * @return int[][] Defines a 2D maze.
 	   */
 	public int[][] getCrossSectionByX(int index) throws IndexOutOfBoundsException{
-		index = index * 2 + 1;
-		
+		//index = index * 2 + 1;
 		if(index >= xLength || index < 0)
 			throw new IndexOutOfBoundsException("Illegal Index: "+index);
-		
 		int [][]maze2d = new int[yLength][zLength];
-		
-		for(int i=0;i<yLength;i++){
-			for(int j=0;j<zLength;j++){
-				maze2d[i][j] = maze[index][yLength-1-i][j];
+			for (int j=0; j< yLength; j++){
+				for (int k=0; k<zLength;k++){
+					maze2d[j][k] = maze[index][j][k];
+				}
 			}
+			return maze2d;
 		}
-		
-		return maze2d;
-	}
-	
 	 /**
 	   * This method is used to generate 2D maze by index for Y Axis.
 	   * @param index This is the index of y Axis to cut the maze on. 
@@ -282,6 +277,41 @@ public class Maze3d implements Serializable{
 		}
 	}
 	
+	
+	public boolean possibleCharacterMove(Position p, String direction) throws IllegalArgumentException{
+		int x = p.getX();
+		int y = p.getY();
+		int z = p.getZ();
+		
+		Position nextPosition1,nextPosition2;
+		
+		switch (direction){
+			case "right":
+				nextPosition1 = new Position(x,y,z+1);
+				break;
+			case "left":
+				nextPosition1 = new Position(x,y,z-1);
+				break;
+			case "up":
+				nextPosition1 = new Position(x,y-1,z);
+				break;
+			case "down":
+				nextPosition1 = new Position(x,y+1,z);
+				break;
+			case "forward":
+				nextPosition1 = new Position(x,y,z+1);
+				break;
+			case "backward":
+				nextPosition1 = new Position(x,y,z-1);
+				break;
+			default:
+				throw new IllegalArgumentException("Illegal Direction: "+direction);
+		}
+		return (!isInShell(nextPosition1) && getValueOfPosition(nextPosition1) != 1);
+	}
+	
+	
+	
 	// Move position by direction
 	public Position movePosition(Position p, String direction) {
 		int x = p.getX();
@@ -315,13 +345,13 @@ public class Maze3d implements Serializable{
 
 		switch (direction) {
 		case "right":
-			return new Position(x, y, z + 1);
-		case "left":
 			return new Position(x, y, z - 1);
+		case "left":
+			return new Position(x, y, z + 1);
 		case "up":
-			return new Position(x, y + 1, z);
-		case "down":
 			return new Position(x, y - 1, z);
+		case "down":
+			return new Position(x, y + 1, z);
 		case "forward":
 			return new Position(x + 2, y, z);
 		case "backward":
@@ -539,13 +569,10 @@ public class Maze3d implements Serializable{
 			}
 			sb.append("\n");
 		}
-
 		return sb.toString();
 	}
 	
 
-	
-	
 	/**
 	 * Return odd numbers in given range
 	 * @param start number

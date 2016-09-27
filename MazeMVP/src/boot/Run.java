@@ -17,9 +17,10 @@ public class Run {
 		xml.readXML("resources/properties.xml");
 		Properties properties = xml.getProperties();
 		
+		//properties.setTypeOfUserInterfece("cli");
+		
 		MyModel model = new MyModel(properties);
 		CommonView view = null;
-		
 		
 		if(properties.getTypeOfUserInterfece().equals("gui")){
 			view = new MazeWindow(properties);

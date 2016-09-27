@@ -35,7 +35,7 @@ public class MazeWindow extends BasicWindow {
 
 	private MazeDisplay mazeDisplay;
 	private Properties properties;
-	
+	public Text comments;
 	
 	public MazeWindow(Properties p) {
 		this.properties = p;
@@ -74,6 +74,9 @@ public class MazeWindow extends BasicWindow {
 		Composite btnGroup = new Composite(shell, SWT.BORDER);
 		RowLayout rowLayout = new RowLayout(SWT.VERTICAL);
 		btnGroup.setLayout(rowLayout);
+		
+		comments = new Text(shell, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		comments.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		Button btnGenerateMaze = new Button(btnGroup, SWT.PUSH);
 		btnGenerateMaze.setText("Generate maze");	
@@ -197,11 +200,11 @@ public class MazeWindow extends BasicWindow {
 		mazeDisplay.addKeyListener(new KeyListener() {
 
 			@Override
-			public void keyReleased(KeyEvent arg0) {
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyReleased(KeyEvent e) {
 				String direction = null;
 				switch (e.keyCode) {
 				case SWT.ARROW_RIGHT:
@@ -226,14 +229,8 @@ public class MazeWindow extends BasicWindow {
 					break;
 				}
 				if (direction != null) {
-					showMessageBox(direction);
-					try {
-						mazeDisplay.moveChracter(direction);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					//redraw();
+					mazeDisplay.moveChracter(direction);
+					mazeDisplay.redrawMe();
 				}
 			}
 		});
@@ -326,11 +323,12 @@ public class MazeWindow extends BasicWindow {
 			Maze3d maze3d = new Maze3d(byteArr);
 			Position startPos = maze3d.getFirstCellAfterShellPostition(maze3d.getStartPosition());
 			mazeDisplay.setCharacterPosition(startPos);
-			int[][] crossSection = maze3d.getCrossSectionByX((startPos.getX()-1)/2);
+			int[][] crossSection = maze3d.getCrossSectionByX(startPos.getX());
 			mazeDisplay.setCrossSection(crossSection, null, null);
 			mazeDisplay.setGoalPosition(maze3d.getGoalPosition());
 			mazeDisplay.setMazeName(maze3d.getName());
-
+			mazeDisplay.setMaze(maze3d);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
