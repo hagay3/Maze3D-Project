@@ -2,7 +2,9 @@ package GUI;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import algorithms.mazeGenerators.Position;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -52,7 +54,6 @@ public class MazeDisplay extends Canvas {
 	private Maze3d maze;
 	private MazeWindow mazeWindow;
 	
-
 	/**
 	 * Constructor 
 	 * @param Composite parent, int style, MyView view
@@ -144,6 +145,46 @@ public class MazeDisplay extends Canvas {
 						e.gc.drawImage(imgUp, 0, 0, imgUp.getBounds().width, imgUp.getBounds().height, cellWidth * j, cellHeight * i, cellWidth, cellHeight);
 					else if (downHint.contains(upDownHint))
 							e.gc.drawImage(imgDown, 0, 0, imgDown.getBounds().width, imgDown.getBounds().height, cellWidth * j, cellHeight * i, cellWidth, cellHeight);
+				}
+			}
+		});
+		
+		
+		
+		addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String direction = null;
+				switch (e.keyCode) {
+				case SWT.ARROW_RIGHT:
+					direction = "right";
+					break;
+				case SWT.ARROW_LEFT:
+					direction = "left";
+					break;
+				case SWT.ARROW_UP:
+					direction = "up";
+					break;
+				case SWT.ARROW_DOWN:
+					direction = "down";
+					break;
+				case SWT.PAGE_DOWN:
+					direction = "backward";
+					break;
+				case SWT.PAGE_UP:
+					direction = "forward";
+					break;
+				default:
+					break;
+				}
+				if (direction != null) {
+					moveChracter(direction);
+					redrawMe();
 				}
 			}
 		});
@@ -270,6 +311,18 @@ public class MazeDisplay extends Canvas {
 
 	public void setMaze(Maze3d maze) {
 		this.maze = maze;
+	}
+
+
+
+	public Maze3d getMaze() {
+		return maze;
+	}
+
+
+
+	public String getMazeName() {
+		return mazeName;
 	}
 	
 	
