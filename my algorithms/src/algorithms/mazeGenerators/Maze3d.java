@@ -283,33 +283,71 @@ public class Maze3d implements Serializable{
 		int y = p.getY();
 		int z = p.getZ();
 		
-		Position nextPosition1,nextPosition2;
+		Position nextPosition1 = null ,nextPosition2 = null;
 		
-		switch (direction){
-			case "right":
-				nextPosition1 = new Position(x,y,z+1);
-				break;
-			case "left":
-				nextPosition1 = new Position(x,y,z-1);
-				break;
-			case "up":
-				nextPosition1 = new Position(x,y-1,z);
-				break;
-			case "down":
-				nextPosition1 = new Position(x,y+1,z);
-				break;
-			case "forward":
-				nextPosition1 = new Position(x,y,z+1);
-				break;
-			case "backward":
-				nextPosition1 = new Position(x,y,z-1);
-				break;
-			default:
-				throw new IllegalArgumentException("Illegal Direction: "+direction);
+		switch (direction) {
+		case "right":
+			nextPosition1 = new Position(x, y, z + 1);
+			break;
+		case "left":
+			nextPosition1 = new Position(x, y, z - 1);
+			break;
+		case "up":
+			nextPosition1 = new Position(x, y - 1, z);
+			break;
+		case "down":
+			nextPosition1 = new Position(x, y + 1, z);
+			break;
+		case "forward":
+			nextPosition1 = new Position(x + 1, y, z);
+			nextPosition2 = new Position(x + 2, y, z);
+			break;
+		case "backward":
+			nextPosition1 = new Position(x - 1, y, z);
+			nextPosition2 = new Position(x - 2, y, z);
+			break;
+		default:
+			throw new IllegalArgumentException("Illegal Direction: "
+					+ direction);
 		}
+		
+		//Handles moving between floors
+		if (direction.equals("forward") || direction.equals("backward")) {
+			if (!isOutOfMaze(nextPosition1) && !isOutOfMaze(nextPosition2)) {
+				if (!isInShell(nextPosition1) && getValueOfPosition(nextPosition1) != 1){
+					return (!isInShell(nextPosition2) && getValueOfPosition(nextPosition2) != 1);
+				} else
+					return false;
+			} else
+				return false;
+		}
+		
 		return (!isInShell(nextPosition1) && getValueOfPosition(nextPosition1) != 1);
 	}
-	
+	// Move character by direction
+	public Position moveCharacter(Position p, String direction) {
+		int x = p.getX();
+		int y = p.getY();
+		int z = p.getZ();
+
+		switch (direction) {
+		case "right":
+			return new Position(x, y, z + 1);
+		case "left":
+			return new Position(x, y, z - 1);
+		case "up":
+			return new Position(x, y - 1, z);
+		case "down":
+			return new Position(x, y + 1, z);
+		case "forward":
+			return new Position(x + 2, y, z);
+		case "backward":
+			return new Position(x - 2, y, z);
+		default:
+			throw new IllegalArgumentException("Illegal Direction: "
+					+ direction);
+		}
+	}
 	
 	
 	// Move position by direction
@@ -337,30 +375,7 @@ public class Maze3d implements Serializable{
 		}
 	}
 
-	// Move character by direction
-	public Position moveCharacter(Position p, String direction) {
-		int x = p.getX();
-		int y = p.getY();
-		int z = p.getZ();
 
-		switch (direction) {
-		case "right":
-			return new Position(x, y, z - 1);
-		case "left":
-			return new Position(x, y, z + 1);
-		case "up":
-			return new Position(x, y - 1, z);
-		case "down":
-			return new Position(x, y + 1, z);
-		case "forward":
-			return new Position(x + 2, y, z);
-		case "backward":
-			return new Position(x - 2, y, z);
-		default:
-			throw new IllegalArgumentException("Illegal Direction: "
-					+ direction);
-		}
-	}
 
 	// Check by the position given if its on the shell of the maze
 	public boolean isInShell(Position p) {

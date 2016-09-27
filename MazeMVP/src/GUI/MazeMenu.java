@@ -96,7 +96,7 @@ public class MazeMenu {
 
     exitItem.addSelectionListener(new SelectionListener() {
       public void widgetSelected(SelectionEvent e) {
-        System.exit(0);
+    	  mazeWindow.exit();
       }
 
       public void widgetDefaultSelected(SelectionEvent e) {

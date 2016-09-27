@@ -12,7 +12,7 @@ public abstract class BasicWindow extends CommonView implements Runnable {
 	
 	@Override
 	public void run() {
-		display = new Display();  // our display
+		display = Display.getCurrent();  // our display
 		shell = new Shell(display); // our window
 		initWidgets();
 		shell.open();
@@ -32,5 +32,6 @@ public abstract class BasicWindow extends CommonView implements Runnable {
 	public void exit(){
 		shell.dispose(); //dispose shell
 		display.dispose(); // dispose OS components
+		System.exit(0); // Exit process
 	}
 }

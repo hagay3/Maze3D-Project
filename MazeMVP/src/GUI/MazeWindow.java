@@ -35,7 +35,9 @@ public class MazeWindow extends BasicWindow {
 
 	private MazeDisplay mazeDisplay;
 	private Properties properties;
-	public Text comments;
+	public Text comments = null;
+	final private Image imgCLI = new Image(null, "resources/images/CLI.png");
+	final private Image imgBackground = new Image(null, "resources/images/light-blue-background.jpg");
 	
 	public MazeWindow(Properties p) {
 		this.properties = p;
@@ -50,8 +52,8 @@ public class MazeWindow extends BasicWindow {
 		shell.setLayout(gridLayout);				
 		shell.setText("Maze3d Game");
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
-		shell.setBackgroundImage(new Image(null, "resources/images/light-blue-background.jpg"));
-		
+		shell.setBackgroundImage(imgBackground);
+		shell.setSize(800, 600);
 		
 		//Initialize the menu bar
 		MazeMenu menu = new MazeMenu(this);
@@ -75,10 +77,15 @@ public class MazeWindow extends BasicWindow {
 		RowLayout rowLayout = new RowLayout(SWT.VERTICAL);
 		btnGroup.setLayout(rowLayout);
 		
-		comments = new Text(shell, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		comments.setLayoutData(new GridData(GridData.FILL_BOTH));
+		//comments = new Text(shell, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		//comments.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		Button btnGenerateMaze = new Button(btnGroup, SWT.PUSH);
+		Button btnCLI = new Button(btnGroup, SWT.PUSH);
+		btnCLI.setBounds(10, 10, 200, 200);
+		
+		btnCLI.setImage(imgCLI);
+		
 		btnGenerateMaze.setText("Generate maze");	
 		
 		btnGenerateMaze.addSelectionListener(new SelectionListener() {
@@ -220,10 +227,10 @@ public class MazeWindow extends BasicWindow {
 					direction = "down";
 					break;
 				case SWT.PAGE_DOWN:
-					direction = "forward";
+					direction = "backward";
 					break;
 				case SWT.PAGE_UP:
-					direction = "backward";
+					direction = "forward";
 					break;
 				default:
 					break;
@@ -321,13 +328,14 @@ public class MazeWindow extends BasicWindow {
 			byte[] byteArr = mazeByteArrString.getBytes(StandardCharsets.UTF_8);
 			// Convert maze from byeArray
 			Maze3d maze3d = new Maze3d(byteArr);
+			mazeDisplay.setMaze(maze3d);
 			Position startPos = maze3d.getFirstCellAfterShellPostition(maze3d.getStartPosition());
 			mazeDisplay.setCharacterPosition(startPos);
 			int[][] crossSection = maze3d.getCrossSectionByX(startPos.getX());
 			mazeDisplay.setCrossSection(crossSection, null, null);
 			mazeDisplay.setGoalPosition(maze3d.getGoalPosition());
 			mazeDisplay.setMazeName(maze3d.getName());
-			mazeDisplay.setMaze(maze3d);
+			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
