@@ -44,6 +44,7 @@ public class MazeDisplay extends Canvas {
 	final private Image imgDown = new Image(null, "resources/images/down.gif");
 	final private Image imgWall = new Image(null, "resources/images/wall.gif");
 	final private Image imgBackwardInMaze = new Image (null, "resources/images/backwardInMaze.png");
+	final private Image imgForwardInMaze = new Image (null, "resources/images/forwardInMaze.png");
 	final private Image imgFinish = new Image (null, "resources/images/finish.png");
 	private boolean drawMeAHint;
 	private Position hintPosition;
@@ -91,16 +92,16 @@ public class MazeDisplay extends Canvas {
 					for (int j = 0; j < crossSection[i].length; j++) {
 						y = i * cellHeight;
 						z = j * cellWidth;
-
-							// e.gc.fillRectangle(z, y, cellWidth,cellHeight);
 							
-							if(!mazeWindow.getMazeName().equals("") && crossSection[i][j] == 0){ //Draw backward and forward signs
+						//Draw backward and forward signs
+							if(!mazeWindow.getMazeName().equals("") && crossSection[i][j] == 0){ 
 								backwardOrForward = new Position(character.getPos().getX(),i, j);
 								if (possibleMoveFromPosition(backwardOrForward, "backward")){
-									e.gc.drawImage(imgBackwardInMaze, 0, 0,imgBackwardInMaze.getBounds().width,imgBackwardInMaze.getBounds().height, z, y,cellWidth, cellHeight);
-								}else if( i == 0 || i == crossSection.length-1 || j == 0 || j == crossSection[i].length-1){
-									e.gc.drawImage(imgFinish, 0, 0,imgFinish.getBounds().width,imgFinish.getBounds().height, z, y,cellWidth, cellHeight);
+								//	e.gc.drawImage(imgBackwardInMaze, 0, 0,imgBackwardInMaze.getBounds().width,imgBackwardInMaze.getBounds().height, z, y,cellWidth, cellHeight);									
 								}
+								//Draw flags for start / goal
+								if( i == 0 || i == crossSection.length-1 || j == 0 || j == crossSection[i].length-1)
+									e.gc.drawImage(imgFinish, 0, 0,imgFinish.getBounds().width,imgFinish.getBounds().height, z, y,cellWidth, cellHeight);
 							}
 						
 							if(crossSection[i][j] == 1) //Draw walls 

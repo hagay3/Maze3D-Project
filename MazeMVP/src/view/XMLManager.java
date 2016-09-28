@@ -1,4 +1,4 @@
-package boot;
+package view;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;

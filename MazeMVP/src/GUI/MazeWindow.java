@@ -1,21 +1,15 @@
 package GUI;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.Random;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.cocoa.OS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -24,10 +18,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
@@ -41,6 +33,7 @@ import java.util.TimerTask;
 
 import boot.Run;
 import presenter.Properties;
+import view.XMLManager;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
@@ -56,9 +49,12 @@ public class MazeWindow extends BasicWindow {
 	Label possibleKeysLabel;
 	TimerTask animationSolutionTask;
 	Timer showSolutionByAnimation;
+	boolean hint = false;
+	XMLManager xml;
 	
-	public MazeWindow(Properties p) {
-		this.properties = p;
+	public MazeWindow(Properties properties) {
+		this.properties = properties;
+		xml = new XMLManager();
 	}
 	
 	@Override
@@ -72,6 +68,7 @@ public class MazeWindow extends BasicWindow {
 		GridData gd = new GridData(SWT.LEFT, SWT.LEFT, false, false, 1, 1);
 		gd.heightHint = 100;
 		gd.widthHint = 110;
+		shell.setText("Maze3d - Hagai Ovadia");
 		
 		GridData fitGridData = new GridData(); 
 		fitGridData.verticalAlignment = GridData.VERTICAL_ALIGN_BEGINNING; 
@@ -138,22 +135,76 @@ public class MazeWindow extends BasicWindow {
 	    /* "Options" Tab */
 	    TabItem optionsTab = new TabItem(MazeFolder, SWT.NULL);
 	    optionsTab.setText("Options");
-	    Composite optionsForm = new Composite(MazeFolder, SWT.NONE);
+	    Composite optionsForm = new Composite(MazeFolder, SWT.NULL);
 	    optionsForm.setLayout(rowLayout);
 	    optionsTab.setControl(optionsForm);
 		    
-		/* Maze Generation Algorithm - Default: grwoing_random */ 
-		createLabel(optionsForm,SWT.NULL, "Generation Algorithm:", 120,15); 
+		/* Maze Generation Algorithm - Default: growing_random */ 
+		createLabel(optionsForm,SWT.NULL, "Generation Algorithm:", 130,15); 
+		String[] options = {"simple", "growing random","growing newest"};
+		Combo generationAlgorithmCombo = createCombo(optionsForm, SWT.READ_ONLY, options, "growing random");
+		
+		/* If new algo generation is chosen update the properties */
+		generationAlgorithmCombo.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				
+				properties.setAlgorithmToGenerateMaze(generationAlgorithmCombo.getText());
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
 	
-		String[] options = {"simple", "grwoing_random","grwoing_newest"};
-		Combo generationAlgorithmCombo = createCombo(optionsForm, SWT.NULL, options, "grwoing_random");
 		
-		
-	    /* Maze Solving Algorithm - Default: DFS  */ 
+	    /* Maze Solving Algorithm - Default: bfs  */ 
 		createLabel(optionsForm, SWT.FILL, "Solving Algorithm:", 120, 15);
 		String[] solvingOptions = {"dfs", "bfs"};
-		Combo solvingAlgorithmCombo = createCombo(optionsForm, SWT.NULL, solvingOptions, "bfs");
-		createLabel(optionsForm,SWT.FILL, "", 120, 10); 
+		Combo solvingAlgorithmCombo = createCombo(optionsForm, SWT.READ_ONLY, solvingOptions, "bfs");
+		
+		/* If new search generation is chosen update the properties */
+		solvingAlgorithmCombo.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				properties.setAlgorithmToSearch(solvingAlgorithmCombo.getText());
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
+		/* Maze UI - Default: gui  */ 
+		createLabel(optionsForm, SWT.FILL, "UI: ", 120, 15);
+		String[] uiOptions = {"gui", "cli"};
+		Combo uiCombo = createCombo(optionsForm, SWT.READ_ONLY, uiOptions, "gui");
+		
+		/* If new UI is chosen update the properties */
+		uiCombo.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				properties.setTypeOfUserInterfece(uiCombo.getText());
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
+		/* Maze Threads Number - Default: 10  */ 
+		createLabel(optionsForm, SWT.FILL, "Threads Number: ", 120, 15);
+		String[] threadsOptions = {"5", "10","20","30"};
+		Combo threadsCombo = createCombo(optionsForm, SWT.READ_ONLY, threadsOptions, "10");
+		
+		/* If new num of threads  is chosen update the properties */
+		threadsCombo.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				properties.setNumberOfThreads(Integer.parseInt(threadsCombo.getText()));
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
+		//Empty line
+		createLabel(optionsForm,SWT.FILL, "", 120, 10);
+		
+		//Save button
 	    Button submitButton = createButton(optionsForm, " Save   ", "resources/TabFolder/Save.png");
 	
 	    
@@ -182,15 +233,22 @@ public class MazeWindow extends BasicWindow {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				org.eclipse.swt.widgets.FileDialog fileDialog = new org.eclipse.swt.widgets.FileDialog(shell, SWT.OPEN);
+				FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
 				fileDialog.setText("Open Properties");
 				//fileDialog.setFilterPath("C:/");
 				String[] fileTypes = {"*.xml"}; 
 				fileDialog.setFilterExtensions(fileTypes);
 				String selectedFile = fileDialog.open();
-				String[] args = {selectedFile};
-				setChanged();
-				notifyObservers("open_properties_file "+args);
+				try {
+					xml.readXML(selectedFile);
+					properties = xml.getProperties();
+					solvingAlgorithmCombo.setText(properties.getAlgorithmToSearch());
+					generationAlgorithmCombo.setText(properties.getAlgorithmToGenerateMaze());
+					uiCombo.setText(properties.getTypeOfUserInterfece());
+					threadsCombo.setText(Integer.toString(properties.getNumberOfThreads()));
+				} catch (FileNotFoundException | ClassCastException e) {
+					showMaze("Error "+e.getMessage());
+				}
 			}
 			
 			@Override
@@ -229,18 +287,18 @@ public class MazeWindow extends BasicWindow {
 		saveMaze.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				org.eclipse.swt.widgets.FileDialog fileDialog = new org.eclipse.swt.widgets.FileDialog(shell, SWT.SAVE);
+				FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
 				if(mazeDisplay.getMaze() != null && mazeDisplay != null)
 				{
 					fileDialog.setText("Save Maze to file");
 					//fileDialog.setFilterPath("C:/");
 					String[] fileTypes = {"*.Game"}; 
 					fileDialog.setFilterExtensions(fileTypes);
-					fileDialog.setFileName("Game.Game");
+					fileDialog.setFileName(mazeName + ".Game");
 					String selectedFile = fileDialog.open();
 					String selectedName = fileDialog.getFileName();
 					setChanged();
-					notifyObservers("save maze "+mazeDisplay.getMaze().getName()+" "+ fileDialog.getFilterPath()+"\\"+selectedName);
+					notifyObservers("save_maze "+mazeDisplay.getMaze().getName()+" "+ fileDialog.getFilterPath()+"\\"+selectedName);
 				}
 				else
 					showMessageBox("Generate a maze first!");
@@ -295,7 +353,7 @@ public class MazeWindow extends BasicWindow {
 			public void widgetSelected(SelectionEvent arg0) {
 				Random rand = new Random();
 				int  n = rand.nextInt(100) + 1;
-				String quickname = "QuickStartMaze"+Integer.toString(n); 
+				String quickname = "QuickStartMaze"+Integer.toString(n);
 				setChanged();
 				notifyObservers("generate_3d_maze "+quickname+" 3 6 6 "+ properties.getAlgorithmToGenerateMaze());
 				
@@ -343,17 +401,23 @@ public class MazeWindow extends BasicWindow {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				String generator="";
-				if(generationAlgorithmCombo.getText().equals("Complicated"))
-					generator="MyMaze3dGenerator";
-				else
-					generator="SimpleMazeGenerator";
-				String solver="";
-				if(solvingAlgorithmCombo.getText().equals("DFS"))
-					solver="DFS";
-				else
-					solver="BFS";
-				
+				properties.setAlgorithmToGenerateMaze(generationAlgorithmCombo.getText());
+				properties.setAlgorithmToSearch(solvingAlgorithmCombo.getText());
+				properties.setTypeOfUserInterfece(uiCombo.getText());
+				properties.setNumberOfThreads(Integer.parseInt(threadsCombo.getText()));
+				FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
+				fileDialog.setText("Save Properties to file");
+				//fileDialog.setFilterPath("C:/");
+				String[] fileTypes = {"*.xml"}; 
+				fileDialog.setFilterExtensions(fileTypes);
+				fileDialog.setFileName("properties.xml");
+				String selectedPath = fileDialog.open();
+				xml.setFilename(selectedPath);
+				try {
+					xml.writeXML(properties);
+				} catch (FileNotFoundException | ClassCastException e) {
+					showMessageBox("Error "+e.getMessage());
+				}
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
@@ -610,31 +674,16 @@ public class MazeWindow extends BasicWindow {
 	 * @param style represent the style
 	 * @param options represent the String[] of strings to put at the combo
 	 * @param placeholder represent the first value of the combo
-	 * @param width represent the combo width
-	 * @param height represent the combo height
 	 * @return combo 
 	 */
-	private Combo createCombo(Composite parent, int style, String[] options, String placeholder, int width, int height){
+	private Combo createCombo(Composite parent, int style, String[] options, String placeholder){
 		Combo combo = new Combo(parent, style);
 		for (int i = 0; i < options.length; i++) {
 			combo.add(options[i]);
 		}
 		combo.setText(placeholder);
-		combo.setLayoutData(new RowData(width, height));
 		return combo;
 	}
-	/**
-	 * This method will create combo box with\by the following values
-	 * @param parent represent the parent to be added to
-	 * @param style represent the style
-	 * @param options represent the String[] of strings to put at the combo
-	 * @param placeholder represent the first value of the combo
-	 * @return combo 
-	 */
-	private Combo createCombo(Composite parent, int style, String[] options, String placeholder){
-		return createCombo(parent, style, options, placeholder, 90, 20);
-	}
-
 	public String getMazeName() {
 		return mazeName;
 	}
@@ -653,37 +702,38 @@ public class MazeWindow extends BasicWindow {
 		 
 		
 		Solution<Position> mazeSolution = (Solution<Position>) solution;
-		/*
-		 if (this.giveMeAHint) { // the user asked for only one step from the
-		 solution (a hint) this.giveMeAHint = false;
-		 this.mazeDisplay.drawHint(solution.getStates().get(1).getValue()); }
-		 else {*/
-		 
-
-		this.animationSolutionTask = new TimerTask() {
-			int i = 0;
-
-			@Override
-			public void run() {
-				if (i < mazeSolution.getStates().size())
-					mazeDisplay.moveChracter(mazeSolution.getStates().get(i++).getValue());
-				else {
-					display.syncExec(new Runnable() {
-
-						@Override
-						public void run() {
-							// winner();
-						}
-
-					});
-					cancel();
-				}
-			}
-		};
-		showSolutionByAnimation = new Timer();
-		showSolutionByAnimation.scheduleAtFixedRate(this.animationSolutionTask,0, 500);
 		
-	}
+		 if (this.hint) { // the user asked for only one step from the
+			 this.hint = false;
+			 //mazeDisplay.drawHint(solution.getStates().get(1).getValue()); 
+			 }
+			 else {
+			 
+
+			this.animationSolutionTask = new TimerTask() {
+				int i = 0;
 	
+				@Override
+				public void run() {
+					if (i < mazeSolution.getStates().size())
+						mazeDisplay.moveChracter(mazeSolution.getStates().get(i++).getValue());
+					else {
+						display.syncExec(new Runnable() {
+	
+							@Override
+							public void run() {
+								// winner();
+							}
+	
+						});
+						cancel();
+					}
+				}
+			};
+			showSolutionByAnimation = new Timer();
+			showSolutionByAnimation.scheduleAtFixedRate(this.animationSolutionTask,0, 500);
+			
+	}
+	}
 
 }

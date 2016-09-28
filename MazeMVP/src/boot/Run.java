@@ -7,6 +7,7 @@ import GUI.MazeWindow;
 import presenter.*;
 import view.CommonView;
 import view.MyView;
+import view.XMLManager;
 import model.MyModel;
 
 
@@ -18,6 +19,7 @@ public class Run {
 		XMLManager xml = new XMLManager();
 		xml.readXML("resources/properties.xml");
 		Properties properties = xml.getProperties();
+		
 		if(args.length == 1){
 			properties.setTypeOfUserInterfece(args[0]);
 		}
