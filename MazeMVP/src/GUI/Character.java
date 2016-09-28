@@ -3,28 +3,29 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import algorithms.mazeGenerators.Position;
 /**
- * class Character
+ * class Character in maze
  */
 public class Character {
 	private Position pos;
 	private Image img;
 	
 	/**
-	 * constractor
+	 * constructor
 	 */
 	public Character() {
 		this.img = new Image(null, "resources/images/ghost-character.png");
 	}
 
 	/**
-	 * getPos
+	 * Getter pos
+	 * @return pos
 	 */
 	public Position getPos() {
 		return pos;
 	}
 
 	/**
-	 * setPos
+	 * Setter pos
 	 * @param pos, Position
 	 */
 	public void setPos(Position pos) {

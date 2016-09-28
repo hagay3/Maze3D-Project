@@ -72,6 +72,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void HandleDirPath(String[] paramArray) {
 
 		if (paramArray == null || paramArray.length != 1) {
@@ -98,6 +99,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void handleGenerate3dMaze(String[] paramArray) {
 
 		if (paramArray == null) {
@@ -177,6 +179,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void handleShowMaze(String[] paramArray) {
 		if (paramArray == null || paramArray.length != 1) {
 			notifyMyObservers("error Invalid command");
@@ -206,6 +209,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void handleDisplayCrossSectionBy(String[] paramArray) {
 		if (paramArray== null || paramArray.length != 3) {
 			notifyMyObservers("error Invalid amount of parameters");
@@ -279,6 +283,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void handleSaveMaze(String[] paramArray) {
 
 		if (paramArray == null || paramArray.length != 2) {
@@ -325,6 +330,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void handleLoadMaze(String[] paramArray) {
 		if (paramArray == null || paramArray.length != 2) {
 			notifyMyObservers("error Invalid amount of parmaters");
@@ -382,6 +388,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void handleSolve(String[] paramArray) {
 		if (paramArray == null ||  paramArray.length != 2) {
 			notifyMyObservers("error Invalid amount of parmaters\n");
@@ -436,6 +443,7 @@ public class MyModel extends Observable implements Model{
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void handleDisplaySolution(String[] paramarray) {
 
 		if (paramarray == null || paramarray.length != 1) {

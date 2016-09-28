@@ -1,4 +1,8 @@
 package view;
+/*
+ * interface View
+ * View defines the user facade, means client side
+ */
 public interface View {
 	/**
 	 * starting the command line interface

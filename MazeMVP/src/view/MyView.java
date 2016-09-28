@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import algorithms.mazeGenerators.Maze3d;
-
+/**
+ * MyView extends CommonView
+ * MyView is the View for CLI
+ *
+ */
 public class MyView extends CommonView {
 	
 	private BufferedReader in;

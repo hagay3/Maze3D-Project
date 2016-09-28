@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import model.Model;
 import view.View;
-
+/*
+ * Mapping the view and model commands
+ */
 public class CommandsManager {
 
 	HashMap<String, Command> viewCommands;
@@ -19,7 +21,9 @@ public class CommandsManager {
 		modelCommands = new HashMap<String, Command>();
 		initCommands();
 	}
-
+	/**
+	 * Initialize the mappping between view and model
+	 */
 	public void initCommands() {
 		viewCommands.put("dir", new Command() {
 			@Override

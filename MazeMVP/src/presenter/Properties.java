@@ -3,7 +3,8 @@ package presenter;
 import java.io.Serializable;
 
 /**
- * a class that holds the properties of the maze creation
+ * Properties implements Serializable
+ * Properties holds the properties of the maze creation
  */
 public class Properties implements Serializable {
 

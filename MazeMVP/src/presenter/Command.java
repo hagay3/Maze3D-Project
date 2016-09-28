@@ -1,7 +1,7 @@
 package presenter;
 
 /**
- * defines the command interface,where each command must implement doCommand
+ * Defines the command interface,where each command must implement doCommand
  *
  */
 public interface Command {

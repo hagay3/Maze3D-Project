@@ -39,16 +39,17 @@ import view.XMLManager;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
-
+/**
+ * 
+ * MazeWindows defines GUI buttons,labels,dialogs. 
+ * 
+ */
 public class MazeWindow extends BasicWindow {
 
 	String mazeName = "";
 	final private Image imgBackgroundSmall = new Image(null, "resources/images/backgroundSmall.png");
 	private MazeDisplay mazeDisplay;
 	private Properties properties;
-	public Text comments = null;
-	Label metaDataLabel;
-	Label possibleKeysLabel;
 	TimerTask animationSolutionTask;
 	Timer showSolutionByAnimation;
 	boolean hint = false;
@@ -123,16 +124,16 @@ public class MazeWindow extends BasicWindow {
 		
         playTab.setControl(playForm);
     
+        /**
+         * Buttons
+         */
     	Button generateNewMazeButton = createButton(playForm, "  Generate    ", "resources/TabFolder/Generate.png");
     	Button quickStartButton = createButton(playForm, "  Quick Start", "resources/TabFolder/quickStart.png");
     	Button hintButton = createButton(playForm, "  Hint     ", "resources/TabFolder/Hint.png");
     	Button solveButton = createButton(playForm, "  Solve Maze   ", "resources/TabFolder/Solve.png");
     	Button cliButton = createButton(playForm, "  CLI   ", "resources/TabFolder/Solve.png");
         	
-	    /* Labels */
-		metaDataLabel = createLabel(playForm, SWT.FILL, "", 120, 45);
-		possibleKeysLabel = createLabel(playForm, SWT.FILL, "", 120, 60); 
-	
+
 	    /* "Options" Tab */
 	    TabItem optionsTab = new TabItem(MazeFolder, SWT.NULL);
 	    optionsTab.setText("Options");
@@ -326,7 +327,6 @@ public class MazeWindow extends BasicWindow {
 					String fileName = fileLoadDialog.getFileName().replace(".maze3d", "");
 					setMazeName(fileName);
 					setChanged();
-					showMessageBox("load_maze "+selectedFullPathAndName+" "+fileName);
 					notifyObservers("load_maze "+selectedFullPathAndName+" "+fileName);
 				}
 			}
@@ -363,11 +363,9 @@ public class MazeWindow extends BasicWindow {
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
-		
-		
+				
 		/* What happens when a user clicks "[Solve]". */
 		solveButton.addSelectionListener(new SelectionListener() {
-			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				if (mazeDisplay != null && !getMazeName().equals("")) {
@@ -398,7 +396,6 @@ public class MazeWindow extends BasicWindow {
 		
         /* What happens when a user clicks [Save] */
         submitButton.addSelectionListener(new SelectionListener() {
-			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				properties.setAlgorithmToGenerateMaze(generationAlgorithmCombo.getText());
@@ -432,6 +429,9 @@ public class MazeWindow extends BasicWindow {
 		mazeDisplay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,true,1,1));
 		mazeDisplay.setFocus();   
 	}
+	/**
+	 * Pop up window with options
+	 */
 	protected void showGenerateMazeOptions() {
 		Shell generateWindowShell = new Shell(display, SWT.TITLE | SWT.CLOSE);
 		generateWindowShell.setText("Generate maze window");
@@ -512,6 +512,9 @@ public class MazeWindow extends BasicWindow {
 		generateWindowShell.open();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void notifyMazeIsReady(String name) {
 		String nameFix = name.replace(" ", "");
@@ -524,6 +527,10 @@ public class MazeWindow extends BasicWindow {
 		});
 	}
 
+	/**
+	 * Pop up message box
+	 * @param str, contect of the message
+	 */
 	public void showMessageBox(String str) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -534,37 +541,51 @@ public class MazeWindow extends BasicWindow {
 		});
 	}
 	
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void start() {
 		run();		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showDirPath(String dirArray) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showError(String message) {
 		showMessageBox(message);
 		
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showDisplayCrossSectionBy(String crossMazeBySection) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showSaveMaze(String str) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showLoadMaze(String str) {
 		Display.getDefault().syncExec(new Runnable() {
@@ -576,24 +597,35 @@ public class MazeWindow extends BasicWindow {
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void solutionIsReady(String name) {
 		setChanged();
 		notifyObservers("get_solution " + name);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showDisplaySolution(String sol) {
 		
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void printMenu(String menu) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showMaze(String mazeByteArrString) {
 		try {
@@ -699,7 +731,7 @@ public class MazeWindow extends BasicWindow {
 						display.syncExec(new Runnable() {
 							@Override
 							public void run() {
-								//winner();
+								mazeDisplay.setWinner(true);
 							}
 						});
 						cancel();

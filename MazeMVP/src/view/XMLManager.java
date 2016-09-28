@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import presenter.Properties;
 
 /**
- * XMLManager will used for writing and reading from xml.
+ * XMLManager will be used for writing and reading from xml.
  */
 
 public class XMLManager {

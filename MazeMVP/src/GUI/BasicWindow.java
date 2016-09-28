@@ -3,7 +3,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import view.CommonView;
-
+/**
+ * BasicWindow is a place holder for the gui view
+ *
+ */
 public abstract class BasicWindow extends CommonView implements Runnable {
 
 	protected Display display;

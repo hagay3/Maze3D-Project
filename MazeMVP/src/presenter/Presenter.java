@@ -6,6 +6,12 @@ import java.util.Observer;
 import model.Model;
 import view.View;
 
+/**
+ * Presenter implements Observer
+ * Presenter is where all the events comes to
+ * It observes the view and the model
+ *
+ */
 
 @SuppressWarnings("unused")
 public class Presenter implements Observer {
