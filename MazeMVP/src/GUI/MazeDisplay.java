@@ -1,5 +1,4 @@
 package GUI;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,26 +33,21 @@ import org.eclipse.swt.events.KeyListener;
  */
 public class MazeDisplay extends Canvas {
 	
-	@SuppressWarnings("unused")
-	private int whichFloorAmI;
+
 	private int[][] crossSection = { {0}, {0} };
 	private Character character;
-	final private Image imgGoal = new Image(null,"resources/images/apple.png") ;
-	final private Image imgWinner = new Image(null,"resources/images/winner.gif");
-	final private Image imgUp = new Image(null, "resources/images/up.gif");
-	final private Image imgDown = new Image(null, "resources/images/down.gif");
+	final private Image imgHint = new Image(null,"resources/images/hint.png") ;
+	final private Image imgWinner = new Image(null,"resources/images/hint.png");
 	final private Image imgWall = new Image(null, "resources/images/wall.gif");
-	final private Image imgBackwardInMaze = new Image (null, "resources/images/backwardInMaze.png");
-	final private Image imgForwardInMaze = new Image (null, "resources/images/forwardInMaze.png");
 	final private Image imgFinish = new Image (null, "resources/images/finish.png");
 	private boolean drawMeAHint;
 	private Position hintPosition;
 	private boolean winner;
 	private Position goalPosition;
-	private List<Point> downHint;
-	private List<Point> upHint;
+	private Position startPosition;
 	private Maze3d maze;
-	private MazeWindow mazeWindow;
+	MazeWindow mazeWindow;
+	
 	
 	/**
 	 * Constructor 
@@ -65,13 +59,9 @@ public class MazeDisplay extends Canvas {
 		this.maze = maze;
 		this.mazeWindow = mazeWindow;
 		character = new Character();
-		if(character.getPos() != null)
-			whichFloorAmI = character.getPos().getX();
 		character.setPos(new Position(-1, -1, -1));
 		drawMeAHint = false;
 		winner = false;
-		upHint = new ArrayList<Point>();
-		downHint = new ArrayList<Point>();
 
 		// draw the maze
 		addPaintListener(new PaintListener() {
@@ -86,66 +76,42 @@ public class MazeDisplay extends Canvas {
 
 				e.gc.setForeground(new Color(null, 1, 255, 0));
 				e.gc.setBackground(new Color(null, 0, 0, 0));
-				Position backwardOrForward;
 				
 				for (int i = 0; i < crossSection.length; i++) {
 					for (int j = 0; j < crossSection[i].length; j++) {
 						y = i * cellHeight;
 						z = j * cellWidth;
 							
-						//Draw backward and forward signs
+							//Draw backward and forward signs
 							if(!mazeWindow.getMazeName().equals("") && crossSection[i][j] == 0){ 
-								backwardOrForward = new Position(character.getPos().getX(),i, j);
-								if (possibleMoveFromPosition(backwardOrForward, "backward")){
-								//	e.gc.drawImage(imgBackwardInMaze, 0, 0,imgBackwardInMaze.getBounds().width,imgBackwardInMaze.getBounds().height, z, y,cellWidth, cellHeight);									
-								}
+								
 								//Draw flags for start / goal
-								if( i == 0 || i == crossSection.length-1 || j == 0 || j == crossSection[i].length-1)
-									e.gc.drawImage(imgFinish, 0, 0,imgFinish.getBounds().width,imgFinish.getBounds().height, z, y,cellWidth, cellHeight);
+								if( i == 0 || i == crossSection.length-1 || j == 0 || j == crossSection[i].length-1){
+									if( i!= startPosition.getY() && j!= startPosition.getZ())
+										e.gc.drawImage(imgFinish, 0, 0,imgFinish.getBounds().width,imgFinish.getBounds().height, z, y,cellWidth, cellHeight);
+								}
 							}
 						
-							if(crossSection[i][j] == 1) //Draw walls 
+							//Draw walls
+							if(crossSection[i][j] == 1)  
 								e.gc.drawImage(imgWall, 0, 0,imgWall.getBounds().width,imgWall.getBounds().height, z, y,cellWidth, cellHeight);
 						}
 					}
 				
 				
-				if(maze != null && mazeWindow.comments != null){
-					mazeWindow.comments.append("Character position: " +character.getPos().toString()+"\n");
-					mazeWindow.comments.append("Current floor: "+Integer.toString(character.getPos().getX())+"\n");
-					mazeWindow.comments.append("floor: "+Integer.toString(character.getPos().getX())+"\n");
-					mazeWindow.comments.append("Goal Position floor: "+ Integer.toString(maze.getGoalPosition().getX())+"\n");
-					mazeWindow.comments.append("Start Position floor: "+ Integer.toString(maze.getGoalPosition().getX())+"\n");
-			}
-				
-				
+	
 				
 				if (drawMeAHint) {
 					drawMeAHint = false;
-					e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, (cellWidth * hintPosition.getX()) + (cellWidth / 4), (cellHeight * hintPosition.getY()) + (cellHeight / 4), cellWidth/2, cellHeight/2);
+					e.gc.drawImage(imgHint, 0, 0, imgHint.getBounds().width, imgHint.getBounds().height, (cellWidth * hintPosition.getZ()) + (cellWidth / 4), (cellHeight * hintPosition.getY()) + (cellHeight / 4), cellWidth/2, cellHeight/2);
 				}
-				
 				
 				if (!winner) {
 					character.draw(cellWidth,cellHeight, e.gc);
-					//if (whichFloorAmI == goalPosition.getX())
-					//	e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
 				} else
 					e.gc.drawImage(imgWinner, 0, 0, imgWinner.getBounds().width, imgWinner.getBounds().height, cellWidth * goalPosition.getX(), cellHeight * goalPosition.getY(), cellWidth, cellHeight);
+				
 				forceFocus();
-			}
-			
-			@SuppressWarnings("unused")
-			private void paintUpDownHints(PaintEvent e, int i, int j, int cellWidth, int cellHeight) {
-				Point upDownHint = new Point(i, j);
-				if (upHint.contains(upDownHint) && downHint.contains(upDownHint))
-					e.gc.drawImage(imgBackwardInMaze, 0, 0, imgBackwardInMaze.getBounds().width, imgBackwardInMaze.getBounds().height, cellWidth * j, cellHeight * i, cellWidth, cellHeight);
-				else {
-					if (upHint.contains(upDownHint))
-						e.gc.drawImage(imgUp, 0, 0, imgUp.getBounds().width, imgUp.getBounds().height, cellWidth * j, cellHeight * i, cellWidth, cellHeight);
-					else if (downHint.contains(upDownHint))
-							e.gc.drawImage(imgDown, 0, 0, imgDown.getBounds().width, imgDown.getBounds().height, cellWidth * j, cellHeight * i, cellWidth, cellHeight);
-				}
 			}
 		});
 		
@@ -228,14 +194,6 @@ public class MazeDisplay extends Canvas {
 	}
 
 	/**
-	 *This method tell us where are we in the maze
-	 * @param whichFloorAmI, int
-	 */
-	public void setWhichFloorAmI(int whichFloorAmI) {
-		this.whichFloorAmI = whichFloorAmI;
-	}
-
-	/**
 	 * paint the maze in crossSection [][]
 	 * @param crossSection, crossSection
 	 * @param upHint, List<Point>
@@ -243,8 +201,6 @@ public class MazeDisplay extends Canvas {
 	 */
 	public void setCrossSection(int[][] crossSection, List<Point> upHint, List<Point> downHint) {
 		this.crossSection = crossSection;
-		this.upHint = upHint;
-		this.downHint = downHint;
 		redrawMe();
 	}
 
@@ -317,6 +273,19 @@ public class MazeDisplay extends Canvas {
 	public Maze3d getMaze() {
 		return maze;
 	}
+
+
+
+	public Position getStartPosition() {
+		return startPosition;
+	}
+
+
+
+	public void setStartPosition(Position startPosition) {
+		this.startPosition = startPosition;
+	}
+	
 	
 
 }

@@ -16,23 +16,27 @@ public class Run {
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
 		
 		
+		
+		//Load properties file
 		XMLManager xml = new XMLManager();
 		xml.readXML("resources/properties.xml");
 		Properties properties = xml.getProperties();
-		
-		if(args.length == 1){
-			properties.setTypeOfUserInterfece(args[0]);
+		if (args.length == 1) {
+			if (args.length == 1 && args[0].equals("cli")) {
+				properties.setTypeOfUserInterfece("cli");
+			} else if (args.length == 1 && args[0].equals("gui")) {
+				properties.setTypeOfUserInterfece("gui");
+			}
 		}
-			
 		
 		
 		MyModel model = new MyModel(properties);
 		CommonView view = null;
-		
-		if(properties.getTypeOfUserInterfece().equals("gui")){
+
+		if (properties.getTypeOfUserInterfece().equals("gui")) {
 			view = new MazeWindow(properties);
-		}else{
-			view = new MyView(new BufferedReader(new InputStreamReader(System.in)),new PrintWriter(System.out));
+		} else {
+			view = new MyView(new BufferedReader(new InputStreamReader(System.in)), new PrintWriter(System.out));
 		}
 		
 		Presenter presenter = new Presenter(view, model);

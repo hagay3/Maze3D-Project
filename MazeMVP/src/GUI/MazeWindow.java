@@ -1,8 +1,10 @@
 package GUI;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -51,6 +53,7 @@ public class MazeWindow extends BasicWindow {
 	Timer showSolutionByAnimation;
 	boolean hint = false;
 	XMLManager xml;
+	int numOfhints = 0;
 	
 	public MazeWindow(Properties properties) {
 		this.properties = properties;
@@ -58,7 +61,6 @@ public class MazeWindow extends BasicWindow {
 	}
 	
 	@Override
-	@SuppressWarnings("unused")
 	protected void initWidgets() {
 		/* General Grid Stuff */
 		GridLayout grid = new GridLayout(2,false); 
@@ -123,13 +125,12 @@ public class MazeWindow extends BasicWindow {
     
     	Button generateNewMazeButton = createButton(playForm, "  Generate    ", "resources/TabFolder/Generate.png");
     	Button quickStartButton = createButton(playForm, "  Quick Start", "resources/TabFolder/quickStart.png");
-    	Button hintButton = createButton(playForm, "  Get Help     ", "resources/TabFolder/Hint.png");
+    	Button hintButton = createButton(playForm, "  Hint     ", "resources/TabFolder/Hint.png");
     	Button solveButton = createButton(playForm, "  Solve Maze   ", "resources/TabFolder/Solve.png");
     	Button cliButton = createButton(playForm, "  CLI   ", "resources/TabFolder/Solve.png");
         	
 	    /* Labels */
 		metaDataLabel = createLabel(playForm, SWT.FILL, "", 120, 45);
-		setMetaDataLabel(0, 0, 0, 0, 0, 0);
 		possibleKeysLabel = createLabel(playForm, SWT.FILL, "", 120, 60); 
 	
 	    /* "Options" Tab */
@@ -221,6 +222,8 @@ public class MazeWindow extends BasicWindow {
 				} catch (IOException e) {
 					showMessageBox(e.getMessage());
 				}
+				
+				
 			}
 			
 			@Override
@@ -234,21 +237,24 @@ public class MazeWindow extends BasicWindow {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-				fileDialog.setText("Open Properties");
-				//fileDialog.setFilterPath("C:/");
-				String[] fileTypes = {"*.xml"}; 
-				fileDialog.setFilterExtensions(fileTypes);
-				String selectedFile = fileDialog.open();
-				try {
-					xml.readXML(selectedFile);
-					properties = xml.getProperties();
-					solvingAlgorithmCombo.setText(properties.getAlgorithmToSearch());
-					generationAlgorithmCombo.setText(properties.getAlgorithmToGenerateMaze());
-					uiCombo.setText(properties.getTypeOfUserInterfece());
-					threadsCombo.setText(Integer.toString(properties.getNumberOfThreads()));
-				} catch (FileNotFoundException | ClassCastException e) {
-					showMaze("Error "+e.getMessage());
+				{
+					fileDialog.setText("Open Properties");
+					String[] fileTypes = { "*.xml" };
+					fileDialog.setFilterExtensions(fileTypes);
+					String selectedFile = fileDialog.open();
+
+					try {
+						xml.readXML(selectedFile);
+						properties = xml.getProperties();
+						solvingAlgorithmCombo.setText(properties.getAlgorithmToSearch());
+						generationAlgorithmCombo.setText(properties.getAlgorithmToGenerateMaze());
+						uiCombo.setText(properties.getTypeOfUserInterfece());
+						threadsCombo.setText(Integer.toString(properties.getNumberOfThreads()));
+					} catch (FileNotFoundException | ClassCastException e) {
+						showMaze("Error " + e.getMessage());
+					}
 				}
+				
 			}
 			
 			@Override
@@ -276,7 +282,7 @@ public class MazeWindow extends BasicWindow {
 				messageBox.setText("Exit Confirmation");
 				int response = messageBox.open();
 				if (response == SWT.YES)
-					display.dispose();// dispose OS components
+					exit();// dispose OS components
 			}
 			
 			@Override
@@ -291,14 +297,12 @@ public class MazeWindow extends BasicWindow {
 				if(mazeDisplay.getMaze() != null && mazeDisplay != null)
 				{
 					fileDialog.setText("Save Maze to file");
-					//fileDialog.setFilterPath("C:/");
-					String[] fileTypes = {"*.Game"}; 
+					String[] fileTypes = {"*.maze3d"}; 
 					fileDialog.setFilterExtensions(fileTypes);
-					fileDialog.setFileName(mazeName + ".Game");
+					fileDialog.setFileName(getMazeName().concat(".maze3d"));
 					String selectedFile = fileDialog.open();
-					String selectedName = fileDialog.getFileName();
 					setChanged();
-					notifyObservers("save_maze "+mazeDisplay.getMaze().getName()+" "+ fileDialog.getFilterPath()+"\\"+selectedName);
+					notifyObservers("save_maze "+getMazeName()+" "+ selectedFile);
 				}
 				else
 					showMessageBox("Generate a maze first!");
@@ -312,21 +316,18 @@ public class MazeWindow extends BasicWindow {
 		loadMaze.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				org.eclipse.swt.widgets.FileDialog fileLoadDialog = new org.eclipse.swt.widgets.FileDialog(shell, SWT.OPEN);
+				FileDialog fileLoadDialog = new FileDialog(shell, SWT.OPEN);
 				{
 					fileLoadDialog.setText("Load maze from file");
 					//fileLoadDialog.setFilterPath("C:\\");
-					String[] fileTypes = {"*.Game"}; 
+					String[] fileTypes = {"*.maze3d"}; 
 					fileLoadDialog.setFilterExtensions(fileTypes);
-					fileLoadDialog.setFileName("Game.Game");
-					String selectedFileToLoad = fileLoadDialog.open();
-					String selectedName = fileLoadDialog.getFileName();
-					//String[] args = {fileLoadDialog.getFilterPath()+"\\"+selectedName,mazeObjectName};
-					//viewCommandMap.get("load maze").doCommand(args);
-					//if(mazeObject!=null && mazeDisplayerCanvas!=null)
-					//{
-					//	started=true;
-					//}
+					String selectedFullPathAndName = fileLoadDialog.open();
+					String fileName = fileLoadDialog.getFileName().replace(".maze3d", "");
+					setMazeName(fileName);
+					setChanged();
+					showMessageBox("load_maze "+selectedFullPathAndName+" "+fileName);
+					notifyObservers("load_maze "+selectedFullPathAndName+" "+fileName);
 				}
 			}
 			
@@ -371,7 +372,7 @@ public class MazeWindow extends BasicWindow {
 			public void widgetSelected(SelectionEvent arg0) {
 				if (mazeDisplay != null && !getMazeName().equals("")) {
 					setChanged();
-					notifyObservers("solve "+ getMazeName() + properties.getAlgorithmToSearch());
+					notifyObservers("solve "+ getMazeName() +" "+ properties.getAlgorithmToSearch());
 				}else
 					showMessageBox("Generate maze first!");
 			}
@@ -384,14 +385,13 @@ public class MazeWindow extends BasicWindow {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if(mazeDisplay != null)
-				{
-					//Updating the model about current place in maze
-					//String[] params = {mazeObjectName,currentFloor+"",mazeDisplayerCanvas.getCharacterX()+"",mazeDisplayerCanvas.getCharacterY()+""};
-					//notifyObservers(params);
-				}
+				if (mazeDisplay != null && !getMazeName().equals("")) {
+					hint = true;
+					setChanged();
+					notifyObservers("solve "+ getMazeName() +" "+ properties.getAlgorithmToSearch());
+				} else
+					showMessageBox("Generate maze first!");
 			}
-			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
@@ -406,17 +406,22 @@ public class MazeWindow extends BasicWindow {
 				properties.setTypeOfUserInterfece(uiCombo.getText());
 				properties.setNumberOfThreads(Integer.parseInt(threadsCombo.getText()));
 				FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
-				fileDialog.setText("Save Properties to file");
-				//fileDialog.setFilterPath("C:/");
-				String[] fileTypes = {"*.xml"}; 
-				fileDialog.setFilterExtensions(fileTypes);
-				fileDialog.setFileName("properties.xml");
-				String selectedPath = fileDialog.open();
-				xml.setFilename(selectedPath);
-				try {
-					xml.writeXML(properties);
-				} catch (FileNotFoundException | ClassCastException e) {
-					showMessageBox("Error "+e.getMessage());
+				
+				{
+					fileDialog.setText("Save Properties to file");
+					// fileDialog.setFilterPath("C:/");
+					String[] fileTypes = { "*.xml" };
+					fileDialog.setFilterExtensions(fileTypes);
+					fileDialog.setFileName("properties.xml");
+					String selectedPath = fileDialog.open();
+					if (selectedPath != null) {
+						try {
+							xml.setFilename(selectedPath);
+							xml.writeXML(properties);
+						} catch (FileNotFoundException | ClassCastException e) {
+							showMessageBox("Error " + e.getMessage());
+						}
+					}
 				}
 			}
 			@Override
@@ -489,6 +494,7 @@ public class MazeWindow extends BasicWindow {
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				numOfhints = 0;
 				setChanged();
 				notifyObservers("generate_3d_maze" + " " + txtName.getText()
 						+ " " + txtFloors.getText() + " " + txtRows.getText()
@@ -503,22 +509,19 @@ public class MazeWindow extends BasicWindow {
 			public void widgetDefaultSelected(SelectionEvent arg0) { }
 			
 		});
-
 		generateWindowShell.open();
-
 	}
 
 	@Override
 	public void notifyMazeIsReady(String name) {
-		setMazeName(name);
+		String nameFix = name.replace(" ", "");
+		setMazeName(nameFix);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				setChanged();
-				notifyObservers("display " + name);
+				notifyObservers("display " + nameFix);
 			}
 		});
-	
-	
 	}
 
 	public void showMessageBox(String str) {
@@ -564,16 +567,19 @@ public class MazeWindow extends BasicWindow {
 
 	@Override
 	public void showLoadMaze(String str) {
-		// TODO Auto-generated method stub
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				setChanged();
+				notifyObservers("display " + mazeName);
+			}
+		});
 		
 	}
 
 	@Override
 	public void solutionIsReady(String name) {
-		
-				setChanged();
-				notifyObservers("get_solution " + name);
-		
+		setChanged();
+		notifyObservers("get_solution " + name);
 	}
 
 	@Override
@@ -600,7 +606,9 @@ public class MazeWindow extends BasicWindow {
 			mazeDisplay.setCharacterPosition(startPos);
 			int[][] crossSection = maze3d.getCrossSectionByX(startPos.getX());
 			mazeDisplay.setCrossSection(crossSection, null, null);
+			
 			mazeDisplay.setGoalPosition(maze3d.getGoalPosition());
+			mazeDisplay.setStartPosition(maze3d.getStartPosition());
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -638,36 +646,6 @@ public class MazeWindow extends BasicWindow {
 	    return button;
 	}
 	
-	public void setMetaDataLabel(int x,int y,int z,int goalX,int goalY,int goalZ)
-	{
-		String metaData =   "You:\t"+x+": {"+y+","+z+"}\nGoal:\t"+goalX+": {"+goalY+","+goalZ+"}";
-		
-		if (mazeDisplay != null && mazeDisplay.getMaze() != null){
-			if (x == goalX && y == goalY && z == goalZ)
-			{
-				metaData += "\nYou Won!";
-			}
-			metaDataLabel.setText(metaData);
-			//setPossibleKeysLabel(x, y, z);
-		}
-	}
-	
-	/**
-	 * This method will create text box with\by the following values
-	 * @param parent represent the composite to be added to
-	 * @param style represent the style
-	 * @param placeholder represent the text value of the label
-	 * @param width represent Text width
-	 * @param height represent Text height
-	 * @return the text box
-	 */
-	private Text createText(Composite parent, int style, String placeholder, int width, int height){
-		Text text = new Text(parent, style);
-	    text.setText(placeholder);
-	    text.setLayoutData(new RowData(width, height));
-	    return text; 
-	}
-	
 	/**
 	 * This method will create combo box with\by the following values
 	 * @param parent represent the parent to be added to
@@ -698,42 +676,40 @@ public class MazeWindow extends BasicWindow {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void processSolution(Object solution) {
-		
-		 
-		
 		Solution<Position> mazeSolution = (Solution<Position>) solution;
-		
-		 if (this.hint) { // the user asked for only one step from the
-			 this.hint = false;
-			 //mazeDisplay.drawHint(solution.getStates().get(1).getValue()); 
-			 }
-			 else {
-			 
 
+		// the user asked for only one step from the
+		if (hint) {
+			if (mazeSolution.getStates().size() > numOfhints) {
+				hint = false;
+				Position pos = mazeSolution.getStates().get(numOfhints).getValue();
+				numOfhints++;
+				mazeDisplay.drawHint(pos);
+			}
+		} else {
+			
 			this.animationSolutionTask = new TimerTask() {
 				int i = 0;
-	
 				@Override
 				public void run() {
-					if (i < mazeSolution.getStates().size())
-						mazeDisplay.moveChracter(mazeSolution.getStates().get(i++).getValue());
-					else {
+					if (i < mazeSolution.getStates().size()){
+						Position pos = mazeSolution.getStates().get(i++).getValue();
+						mazeDisplay.moveChracter(pos);
+					} else {
 						display.syncExec(new Runnable() {
-	
 							@Override
 							public void run() {
-								// winner();
+								//winner();
 							}
-	
 						});
 						cancel();
 					}
 				}
 			};
 			showSolutionByAnimation = new Timer();
-			showSolutionByAnimation.scheduleAtFixedRate(this.animationSolutionTask,0, 500);
-			
-	}
+			showSolutionByAnimation.scheduleAtFixedRate(this.animationSolutionTask, 0, 500);
+
+		}
 	}
 
 }

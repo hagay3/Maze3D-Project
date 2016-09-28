@@ -303,8 +303,7 @@ public class MyModel extends Observable implements Model{
 		Maze3d maze = mazeCollection.get(mazeName);
 
 		try {			
-			OutputStream out = new MyCompressorOutputStream(
-					new FileOutputStream("resources/" + mazeFileName));
+			OutputStream out = new MyCompressorOutputStream(new FileOutputStream(mazeFileName));
 			//Convert maze to byte array
 			byte[] byteArr = maze.toByteArray();
 			//Write the size first
@@ -343,7 +342,7 @@ public class MyModel extends Observable implements Model{
 		
 
 		try {
-			MyDecompressorInputStream in = new MyDecompressorInputStream(new FileInputStream("resources/" + mazeFileName));
+			MyDecompressorInputStream in = new MyDecompressorInputStream(new FileInputStream(mazeFileName));
 
 			// The ByteArrayOutputStream class stream creates a buffer in memory
 			// and all the data sent to the stream is stored in the buffer.
@@ -366,7 +365,7 @@ public class MyModel extends Observable implements Model{
 			
 			mazeCollection.put(mazeName, loaded);
 			mazeToFile.put(mazeName, mazeFileName);
-			notifyMyObservers("passLoadMaze "+mazeName + " has been loaded from file "+ mazeFileName);
+			notifyMyObservers("passLoadMaze "+ mazeName + " has been loaded from file "+ mazeFileName);
 			return;
 		} catch (FileNotFoundException e) {
 			notifyMyObservers("error File not found " + e.getMessage());
@@ -405,7 +404,7 @@ public class MyModel extends Observable implements Model{
 				}
 				// if solution exists for this maze
 				if (mazeSolutions.containsKey(mazeCollection.get(mazeName))) {
-					notifyMyObservers("passSolve Solution for maze " + mazeName + " is already done");
+					notifyMyObservers("passSolve " + mazeName);
 					return;
 				}
 
