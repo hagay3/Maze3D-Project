@@ -6,7 +6,7 @@ This is a 3D maze game written under java
 
 ## Description
 The game generates random mazes, in whatever sizes you'd like for you to enjoy and try solving.
-Tired of solving? The project also includes a built-in solving mechnism, that will hint you in the right direction or show you the way.
+Tired of solving? The project also includes a built-in solving algorithm, that will hint you in the right direction or show you the way.
 
 ## Project Architecture
 This project was built as a part of Java Algorithms course in the College of Management with Nissim Brami.
