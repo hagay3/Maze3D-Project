@@ -14,7 +14,7 @@ The project includes various design patterns, such as Observer Pattern, Strategy
 It implements a solving algorithm using BFS (Best First Search) and DFS algorithms.
 
 ## Documentation
-[Javadoc](http://htmlpreview.github.io/?https://github.com/hagay3/Maze3D-Project/blob/master/javadoc/index.html)
+[Javadoc](https://hagay3.github.io/Maze3D-Project/javadoc/)
 
 ## Demo
 [Demo - Youtube](https://www.youtube.com/watch?v=_DBQmUz4n6s)
