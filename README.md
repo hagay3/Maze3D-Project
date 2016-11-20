@@ -7,3 +7,9 @@ This is a 3D maze game written under java
 Screenshots
 
 ![Main Window](https://github.com/hagay3/Maze3D-Project/blob/master/images/main.png)
+
+
+![Generate maze](https://github.com/hagay3/Maze3D-Project/blob/master/images/Generate.png)
+
+
+![CLI](https://github.com/hagay3/Maze3D-Project/blob/master/images/CLI.png)
