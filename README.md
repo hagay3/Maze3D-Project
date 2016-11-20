@@ -4,6 +4,8 @@
 
 This is a 3D maze game written under java
 
+[Javadoc](http://htmlpreview.github.io/?https://github.com/hagay3/Maze3D-Project/blob/master/javadoc/index.html)
+
 Screenshots
 
 <img src="https://github.com/hagay3/Maze3D-Project/blob/master/images/main.png" width="600">
