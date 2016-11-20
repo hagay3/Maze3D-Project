@@ -1,6 +1,6 @@
 # Maze3D-Project
 
-# 3D Maze Game
+## 3D Maze Game
 
 This is a 3D maze game written under java
 
@@ -19,6 +19,17 @@ It implements a solving algorithm using BFS (Best First Search) and DFS algorith
 ## Demo
 [Demo - Youtube](https://www.youtube.com/watch?v=_DBQmUz4n6s)
 
+## Usage
+```
+git clone https://github.com/hagay3/Maze3D-Project.git
+```
+
+Use the scripts under directory "jars" for the relevant operating system.
+For example in windows 64 bit use cmd:
+```
+cd jars
+runWin64.bat
+```
 
 ## Screenshots
 
