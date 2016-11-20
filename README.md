@@ -4,9 +4,23 @@
 
 This is a 3D maze game written under java
 
+## Description
+The game generates random mazes, in whatever sizes you'd like for you to enjoy and try solving.
+Tired of solving? The project also includes a built-in solving mechnism, that will hint you in the right direction or show you the way.
+
+## Project Architecture
+This project was built as a part of Java Algorithms course in the College of Management with Nissim Brami.
+The project includes various design patterns, such as Observer Pattern, Strategy pattern and Adapter Pattern.
+It implements a solving algorithm using BFS (Best First Search) and DFS algorithms.
+
+## Documentaion
 [Javadoc](http://htmlpreview.github.io/?https://github.com/hagay3/Maze3D-Project/blob/master/javadoc/index.html)
 
-Screenshots
+## Demo
+[Demo - Youtube](https://www.youtube.com/watch?v=_DBQmUz4n6s)
+
+
+## Screenshots
 
 <img src="https://github.com/hagay3/Maze3D-Project/blob/master/images/main.png" width="600">
 
