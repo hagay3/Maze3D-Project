@@ -5,3 +5,5 @@
 This is a 3D maze game written under java
 
 Screenshots
+
+[Main Window](https://github.com/hagay3/Maze3D-Project/blob/master/images/main.png)
