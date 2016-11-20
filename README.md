@@ -25,6 +25,7 @@ git clone https://github.com/hagay3/Maze3D-Project.git
 ```
 
 Use the scripts under directory "jars" for the relevant operating system.
+
 For example in windows 64 bit use cmd:
 ```
 cd jars
