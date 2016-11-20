@@ -13,7 +13,7 @@ This project was built as a part of Java Algorithms course in the College of Man
 The project includes various design patterns, such as Observer Pattern, Strategy pattern and Adapter Pattern.
 It implements a solving algorithm using BFS (Best First Search) and DFS algorithms.
 
-## Documentaion
+## Documentation
 [Javadoc](http://htmlpreview.github.io/?https://github.com/hagay3/Maze3D-Project/blob/master/javadoc/index.html)
 
 ## Demo
